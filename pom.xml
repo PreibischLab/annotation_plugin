@@ -9,10 +9,10 @@
 		<relativePath />
 	</parent>
 	<groupId>net.preibisch</groupId>
-	<artifactId>imagej-clustering</artifactId>
+	<artifactId>fusion_task</artifactId>
 	<version>0.0.2-SNAPSHOT</version>
-	<name>imagej clustering</name>
-	<description>Distibute processing using cluster</description>
+	<name>Fusion Task</name>
+	<description>Fusion Task for clustering</description>
 	<url>https://github.com/PreibischLab/image-clustering</url>
 	<inceptionYear>2019</inceptionYear>
 	<organization>
@@ -56,155 +56,15 @@
 			</roles>
 		</developer>
 	</developers>
-	<contributors>
 
-	</contributors>
-		<mailingLists>
-		<mailingList>
-			<name>Image.sc Forum</name>
-			<archive>https://forum.image.sc/tags/bigstitcher</archive>
-		</mailingList>
-	</mailingLists>
-	
-	<scm>
-		<connection>scm:git:git://github.com/PreibischLab/image-clustering</connection>
-		<developerConnection>scm:git:git@github.com:PreibischLab/image-clustering</developerConnection>
-		<tag>HEAD</tag>
-		<url>https://github.com/PreibischLab/image-clustering</url>
-	</scm>
-	<issueManagement>
-		<system>GitHub Issues</system>
-		<url>https://github.com/PreibischLab/image-clustering/issues</url>
-	</issueManagement>
-	<ciManagement>
-		<system>Travis CI</system>
-		<url>https://travis-ci.org/PreibischLab/image-clustering</url>
-	</ciManagement>
-	
-		<repositories>
-		<!-- NB: for project parent -->
-		<repository>
-			<id>imagej.public</id>
-			<url>http://maven.imagej.net/content/groups/public</url>
-		</repository>
-		<repository>
-			<id>saalfeld-lab-maven-repo</id>
-			<url>https://saalfeldlab.github.io/maven</url>
-		</repository>
-	</repositories>
-	
+	<properties>
+		<imagej-clustering.version>0.0.2-SNAPSHOT</imagej-clustering.version>
+	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>net.imagej</groupId>
-			<artifactId>imagej</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>net.imagej</groupId>
-			<artifactId>imagej-legacy</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>net.imglib2</groupId>
-			<artifactId>imglib2</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>net.imagej</groupId>
-			<artifactId>ij</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>net.imglib2</groupId>
-			<artifactId>imglib2-ij</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>net.imglib2</groupId>
-			<artifactId>imglib2-ui</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>net.imglib2</groupId>
-			<artifactId>imglib2-realtransform</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>net.imglib2</groupId>
-			<artifactId>imglib2-algorithm</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>sc.fiji</groupId>
-			<artifactId>Fiji_Plugins</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.scif</groupId>
-			<artifactId>scifio</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.scif</groupId>
-			<artifactId>scifio-bf-compat</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<!-- The formats-bsd component adds support for open formats. -->
-		<dependency>
-			<groupId>ome</groupId>
-			<artifactId>formats-bsd</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<!-- The formats-gpl component adds support for proprietary formats. -->
-		<dependency>
-			<groupId>ome</groupId>
-			<artifactId>formats-gpl</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.jcraft/jsch -->
-		<dependency>
-			<groupId>com.jcraft</groupId>
-			<artifactId>jsch</artifactId>
-			<version>0.1.54</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>r05</version>
-
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka -->
-		<dependency>
-			<groupId>org.apache.kafka</groupId>
-			<artifactId>kafka_2.12</artifactId>
-			<version>1.1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.4</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<version>2.8.5</version>
-		</dependency>
-
-		<dependency>
 			<groupId>net.preibisch</groupId>
-			<artifactId>multiview-reconstruction</artifactId>
-			<version>0.2.17</version>
+			<artifactId>imagej-clustering</artifactId>
+			<version>${imagej-clustering.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.janelia.saalfeldlab</groupId>
-			<artifactId>n5-imglib2</artifactId>
-			<version>3.0.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>ome</groupId>
-			<artifactId>bio-formats_plugins</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>info.picocli</groupId>
-			<artifactId>picocli</artifactId>
-			<version>3.9.2</version>
-		</dependency>
-
 	</dependencies>
-
-
-
 </project>
