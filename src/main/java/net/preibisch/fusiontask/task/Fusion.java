@@ -1,4 +1,4 @@
-package main.java.net.preibisch.distribution.task;
+package main.java.net.preibisch.fusiontask.task;
 
 import java.util.ArrayList;
 import java.util.Collection;

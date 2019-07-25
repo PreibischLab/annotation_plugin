@@ -1,4 +1,4 @@
-package main.java.net.preibisch.distribution.task;
+package main.java.net.preibisch.fusiontask.task;
 
 import java.util.concurrent.ExecutorService;
 
@@ -9,7 +9,6 @@ import main.java.net.preibisch.distribution.io.img.n5.tests.LoadN5;
 import main.java.net.preibisch.distribution.tools.Threads;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.gauss3.Gauss3;
-import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Util;

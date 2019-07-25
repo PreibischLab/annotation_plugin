@@ -1,6 +1,7 @@
-package main.java.net.preibisch.distribution.task;
+package main.java.net.preibisch.fusiontask.task;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.janelia.saalfeldlab.n5.N5FSWriter;
@@ -11,7 +12,6 @@ import org.janelia.saalfeldlab.n5.imglib2.N5Utils;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
-import main.java.net.preibisch.distribution.algorithm.blockmanager.BlockConfig;
 import main.java.net.preibisch.distribution.algorithm.blockmanager.block.BasicBlockInfo;
 import main.java.net.preibisch.distribution.algorithm.clustering.scripting.TaskType;
 import main.java.net.preibisch.distribution.algorithm.controllers.items.BlocksMetaData;
@@ -19,6 +19,7 @@ import main.java.net.preibisch.distribution.io.img.XMLFile;
 import main.java.net.preibisch.distribution.io.img.n5.N5File;
 import main.java.net.preibisch.distribution.tools.Tools;
 import mpicbg.spim.data.SpimDataException;
+import mpicbg.spim.data.sequence.ViewId;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Util;
@@ -48,7 +49,7 @@ public class MainJob implements Callable<Void> {
 
 	@Override
 	public Void call() throws Exception {
-		id = id -1; 
+		try {id = id -1; 
 		
 		TaskType type = TaskType.of(task);
 		switch (type) {
@@ -63,16 +64,28 @@ public class MainJob implements Callable<Void> {
 			System.out.println("Error");
 			throw new Exception("Specify task!");
 		}
+		} catch(Exception e) {
+			System.out.println("Error");
+			throw new Exception("Specify task!");
+		}
 //			MyLogger.log.info("Block " + id + " saved !");	
 	}
 	
 	public static void blockTask(String inputPath, String metadataPath, String outputPath, int id) {
 		try {
-			System.out.println("Start process"+id);
-			XMLFile inputFile = XMLFile.XMLFile(inputPath);
+			System.out.println("Start process: "+id);
+//			XMLFile inputFile = XMLFile.XMLFile(inputPath);
 			BlocksMetaData md = BlocksMetaData.fromJson(metadataPath);
+			System.out.println("Got metadata !");
 			BasicBlockInfo binfo = md.getBlocksInfo().get(id);
+			System.out.println("Got block info !");
 			BoundingBox bb = new BoundingBox(Util.long2int(binfo.getMin()), Util.long2int(binfo.getMax()));
+			System.out.println("Bounding box created: "+bb.toString());
+			List<ViewId> viewIds = md.getViewIds() ;
+			System.out.println("get view ids ");
+
+//			XMLFile inputFile = XMLFile.XMLFile(inputPath, bb, md.getDownsample() , viewIds);
+			XMLFile inputFile = XMLFile.XMLFile(inputPath);
 			RandomAccessibleInterval<FloatType> block = inputFile.fuse(bb);
 			N5File outputFile = N5File.open(outputPath);
 			outputFile.saveBlock(block, binfo.getGridOffset());
@@ -87,7 +100,8 @@ public class MainJob implements Callable<Void> {
 		try {
 			BlocksMetaData md = BlocksMetaData.fromJson(metadataPath);
 			long[] dims = md.getDimensions();
-			N5File outputFile = new N5File(outputPath, dims);
+			int blockUnit = md.getBlockUnit();
+			N5File outputFile = new N5File(outputPath, dims,blockUnit );
 			outputFile.create();
 		} catch (JsonSyntaxException | JsonIOException | IOException e) {
 			// TODO Auto-generated catch block
@@ -101,7 +115,10 @@ public class MainJob implements Callable<Void> {
 	RandomAccessibleInterval<FloatType> virtual = inputFile.fuse();
 	String dataset = "/volumes/raw";
 	N5Writer writer = new N5FSWriter(outputPath);
-	int[] blocks = Tools.array(BlockConfig.BLOCK_UNIT, virtual.numDimensions());
+	BlocksMetaData md = BlocksMetaData.fromJson(metadataPath);
+//	long[] dims = md.getDimensions();
+	int blockUnit = md.getBlockUnit();
+	int[] blocks = Tools.array(blockUnit, virtual.numDimensions());
 
 	N5Utils.save(virtual, writer, dataset, blocks, new RawCompression());
 	System.out.println("Ouptut generated");
@@ -113,6 +130,7 @@ public class MainJob implements Callable<Void> {
 
 	public static void main(String[] args) {
 //		new ImageJ();
+//		String str = "-t proc -i /Users/Marwan/Desktop/Task/grid-3d-stitched-h5/dataset.xml -o /Users/Marwan/Desktop/Task/output.n5 -m /Users/Marwan/Desktop/Task/metadata.json -id 1";
 		System.out.println(String.join(" ", args));
 		CommandLine.call(new MainJob(), args);
 	}
