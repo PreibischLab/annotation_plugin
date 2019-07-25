@@ -1,4 +1,4 @@
-package main.java.net.preibisch.fusiontask.task;
+package net.preibisch.fusiontask.task;
 
 import java.io.IOException;
 import java.util.List;
@@ -12,17 +12,17 @@ import org.janelia.saalfeldlab.n5.imglib2.N5Utils;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
-import main.java.net.preibisch.distribution.algorithm.blockmanager.block.BasicBlockInfo;
-import main.java.net.preibisch.distribution.algorithm.clustering.scripting.TaskType;
-import main.java.net.preibisch.distribution.algorithm.controllers.items.BlocksMetaData;
-import main.java.net.preibisch.distribution.io.img.XMLFile;
-import main.java.net.preibisch.distribution.io.img.n5.N5File;
-import main.java.net.preibisch.distribution.tools.Tools;
 import mpicbg.spim.data.SpimDataException;
 import mpicbg.spim.data.sequence.ViewId;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Util;
+import net.preibisch.distribution.algorithm.blockmanager.block.BasicBlockInfo;
+import net.preibisch.distribution.algorithm.clustering.scripting.TaskType;
+import net.preibisch.distribution.algorithm.controllers.items.BlocksMetaData;
+import net.preibisch.distribution.io.img.XMLFile;
+import net.preibisch.distribution.io.img.n5.N5File;
+import net.preibisch.distribution.tools.Tools;
 import net.preibisch.mvrecon.fiji.spimdata.boundingbox.BoundingBox;
 import picocli.CommandLine;
 import picocli.CommandLine.Option;

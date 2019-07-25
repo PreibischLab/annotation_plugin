@@ -1,18 +1,18 @@
-package main.java.net.preibisch.fusiontask.task;
+package net.preibisch.fusiontask.task;
 
 import java.util.concurrent.ExecutorService;
 
 import ij.ImageJ;
-import main.java.net.preibisch.distribution.algorithm.AbstractTask2;
-import main.java.net.preibisch.distribution.algorithm.controllers.items.callback.AbstractCallBack;
-import main.java.net.preibisch.distribution.io.img.n5.tests.LoadN5;
-import main.java.net.preibisch.distribution.tools.Threads;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.gauss3.Gauss3;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
+import net.preibisch.distribution.algorithm.AbstractTask2;
+import net.preibisch.distribution.algorithm.controllers.items.callback.AbstractCallBack;
+import net.preibisch.distribution.io.img.n5.tests.LoadN5;
+import net.preibisch.distribution.tools.Threads;
 
 public class  GaussianTask implements AbstractTask2< RandomAccessibleInterval<FloatType>,  RandomAccessibleInterval<FloatType>, Integer> {
 
