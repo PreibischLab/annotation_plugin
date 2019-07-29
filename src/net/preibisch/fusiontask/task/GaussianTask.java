@@ -13,7 +13,6 @@ import net.preibisch.distribution.algorithm.AbstractTask2;
 import net.preibisch.distribution.algorithm.controllers.items.callback.AbstractCallBack;
 import net.preibisch.distribution.io.img.n5.tests.LoadN5;
 import net.preibisch.distribution.tools.Threads;
-
 public class  GaussianTask implements AbstractTask2< RandomAccessibleInterval<FloatType>,  RandomAccessibleInterval<FloatType>, Integer> {
 
 	
