@@ -84,8 +84,8 @@ public class MainJob implements Callable<Void> {
 			List<ViewId> viewIds = md.getViewIds() ;
 			System.out.println("get view ids ");
 
-//			XMLFile inputFile = XMLFile.XMLFile(inputPath, bb, md.getDownsample() , viewIds);
-			XMLFile inputFile = XMLFile.XMLFile(inputPath);
+			XMLFile inputFile = XMLFile.XMLFile(inputPath, bb, md.getDownsample() , viewIds);
+//			XMLFile inputFile = XMLFile.XMLFile(inputPath);
 			RandomAccessibleInterval<FloatType> block = inputFile.fuse(bb);
 			N5File outputFile = N5File.open(outputPath);
 			outputFile.saveBlock(block, binfo.getGridOffset());
