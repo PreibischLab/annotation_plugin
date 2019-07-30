@@ -130,8 +130,8 @@ public class MainJob implements Callable<Void> {
 
 	public static void main(String[] args) {
 //		new ImageJ();
-//		String str = "-t proc -i /Users/Marwan/Desktop/Task/grid-3d-stitched-h5/dataset.xml -o /Users/Marwan/Desktop/Task/output.n5 -m /Users/Marwan/Desktop/Task/metadata.json -id 1";
-		System.out.println(String.join(" ", args));
-		CommandLine.call(new MainJob(), args);
+		String str = "-t proc -i /Users/Marwan/Desktop/Task/grid-3d-stitched-h5/dataset.xml -o /Users/Marwan/Desktop/Task/output.n5 -m /Users/Marwan/Desktop/Task/metadata.json -id 1";
+//		System.out.println(String.join(" ", args));
+		CommandLine.call(new MainJob(), str.split(" "));
 	}
 }
