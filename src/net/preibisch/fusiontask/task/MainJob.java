@@ -82,11 +82,15 @@ public class MainJob implements Callable<Void> {
 			BoundingBox bb = new BoundingBox(Util.long2int(binfo.getMin()), Util.long2int(binfo.getMax()));
 			System.out.println("Bounding box created: "+bb.toString());
 			List<ViewId> viewIds = md.getViewIds() ;
-			System.out.println("get view ids ");
+			System.out.println("Got view ids ");
 
 			XMLFile inputFile = XMLFile.XMLFile(inputPath, bb, md.getDownsample() , viewIds);
+
+			System.out.println("Input loaded. ");
 //			XMLFile inputFile = XMLFile.XMLFile(inputPath);
 			RandomAccessibleInterval<FloatType> block = inputFile.fuse(bb);
+
+			System.out.println("Got block. ");
 			N5File outputFile = N5File.open(outputPath);
 			outputFile.saveBlock(block, binfo.getGridOffset());
 			System.out.println("Task finished "+id);
@@ -130,8 +134,8 @@ public class MainJob implements Callable<Void> {
 
 	public static void main(String[] args) {
 //		new ImageJ();
-		String str = "-t proc -i /Users/Marwan/Desktop/Task/grid-3d-stitched-h5/dataset.xml -o /Users/Marwan/Desktop/Task/output.n5 -m /Users/Marwan/Desktop/Task/metadata.json -id 1";
+//		String str = "-t proc -i /Users/Marwan/Desktop/Task/grid-3d-stitched-h5/dataset.xml -o /Users/Marwan/Desktop/Task/output.n5 -m /Users/Marwan/Desktop/Task/metadata.json -id 1";
 //		System.out.println(String.join(" ", args));
-		CommandLine.call(new MainJob(), str.split(" "));
+		CommandLine.call(new MainJob(), args);
 	}
 }
