@@ -18,6 +18,7 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Util;
 import net.preibisch.distribution.algorithm.blockmanager.block.BasicBlockInfo;
+import net.preibisch.distribution.algorithm.clustering.kafka.KafkaManager;
 import net.preibisch.distribution.algorithm.clustering.scripting.TaskType;
 import net.preibisch.distribution.algorithm.controllers.items.BlocksMetaData;
 import net.preibisch.distribution.io.img.XMLFile;
@@ -61,10 +62,12 @@ public class MainJob implements Callable<Void> {
 			return null;
 
 		default:
+			KafkaManager.error(id,"Specify task");
 			System.out.println("Error");
 			throw new Exception("Specify task!");
 		}
 		} catch(Exception e) {
+			KafkaManager.error(id,e.toString());
 			System.out.println("Error");
 			throw new Exception("Specify task!");
 		}
@@ -73,42 +76,47 @@ public class MainJob implements Callable<Void> {
 	
 	public static void blockTask(String inputPath, String metadataPath, String outputPath, int id) {
 		try {
-			System.out.println("Start process: "+id);
+			KafkaManager.log(id, "Start process");
 //			XMLFile inputFile = XMLFile.XMLFile(inputPath);
 			BlocksMetaData md = BlocksMetaData.fromJson(metadataPath);
-			System.out.println("Got metadata !");
+			KafkaManager.log(id,"Got metadata !");
 			BasicBlockInfo binfo = md.getBlocksInfo().get(id);
-			System.out.println("Got block info !");
+			KafkaManager.log(id,"Got block info !");
 			BoundingBox bb = new BoundingBox(Util.long2int(binfo.getMin()), Util.long2int(binfo.getMax()));
-			System.out.println("Bounding box created: "+bb.toString());
+			KafkaManager.log(id,"Bounding box created: "+bb.toString());
 			List<ViewId> viewIds = md.getViewIds() ;
-			System.out.println("Got view ids ");
+			KafkaManager.log(id,"Got view ids ");
 
 			XMLFile inputFile = XMLFile.XMLFile(inputPath, bb, md.getDownsample() , viewIds);
 
-			System.out.println("Input loaded. ");
+			KafkaManager.log(id,"Input loaded. ");
 //			XMLFile inputFile = XMLFile.XMLFile(inputPath);
 			RandomAccessibleInterval<FloatType> block = inputFile.fuse(bb);
 
-			System.out.println("Got block. ");
+			KafkaManager.log(id,"Got block. ");
 			N5File outputFile = N5File.open(outputPath);
 			outputFile.saveBlock(block, binfo.getGridOffset());
-			System.out.println("Task finished "+id);
+			KafkaManager.log(id,"Task finished "+id);
+			KafkaManager.done(id,"Task finished "+id);
 		} catch (SpimDataException | IOException e) {
-			// TODO Auto-generated catch block
+			KafkaManager.error(id,e.toString());
 			e.printStackTrace();
 		}
 	}
 
 	public static void generateN5(String inputPath, String metadataPath, String outputPath, int id) {
 		try {
+			KafkaManager.log(id, "Start generate n5");
 			BlocksMetaData md = BlocksMetaData.fromJson(metadataPath);
 			long[] dims = md.getDimensions();
 			int blockUnit = md.getBlockUnit();
 			N5File outputFile = new N5File(outputPath, dims,blockUnit );
 			outputFile.create();
+			KafkaManager.log(id, "N5 Generated");
+			KafkaManager.done(id, "N5 Generated");
 		} catch (JsonSyntaxException | JsonIOException | IOException e) {
-			// TODO Auto-generated catch block
+
+			KafkaManager.error(id, e.toString());
 			e.printStackTrace();
 		}
 	}
