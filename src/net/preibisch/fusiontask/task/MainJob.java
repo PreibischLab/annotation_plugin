@@ -50,13 +50,19 @@ public class MainJob implements Callable<Void> {
 
 	@Override
 	public Void call() throws Exception {
-		try {id = id -1; 
-		
+		try {
+			
+			try{id = id -1; 
+			}catch(Exception e) {
+				KafkaManager.error(-1,e.toString());
+				System.out.println("Error id");
+				throw new Exception("Specify id!");
+			}
 		TaskType type = TaskType.of(task);
 		switch (type) {
 		case PREPARE:
 			generateN5(input, metadataPath, output, id);
-			return null;
+			return null;	
 		case PROCESS:
 			blockTask(input, metadataPath, output, id);
 			return null;
