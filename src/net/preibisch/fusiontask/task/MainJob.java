@@ -19,6 +19,7 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Util;
 import net.preibisch.distribution.algorithm.blockmanager.block.BasicBlockInfo;
 import net.preibisch.distribution.algorithm.clustering.kafka.KafkaManager;
+import net.preibisch.distribution.algorithm.clustering.kafka.KafkaProperties;
 import net.preibisch.distribution.algorithm.clustering.scripting.TaskType;
 import net.preibisch.distribution.algorithm.controllers.items.BlocksMetaData;
 import net.preibisch.distribution.io.img.XMLFile;
@@ -51,61 +52,64 @@ public class MainJob implements Callable<Void> {
 	@Override
 	public Void call() throws Exception {
 		try {
-			
-			try{id = id -1; 
-			}catch(Exception e) {
-				KafkaManager.error(-1,e.toString());
+
+			try {
+				id = id - 1;
+			} catch (Exception e) {
+				KafkaManager.error(-1, e.toString());
 				System.out.println("Error id");
 				throw new Exception("Specify id!");
 			}
-		TaskType type = TaskType.of(task);
-		switch (type) {
-		case PREPARE:
-			generateN5(input, metadataPath, output, id);
-			return null;	
-		case PROCESS:
-			blockTask(input, metadataPath, output, id);
-			return null;
+			TaskType type = TaskType.of(task);
+			switch (type) {
+			case PREPARE:
+				generateN5(input, metadataPath, output, id);
+				return null;
+			case PROCESS:
+				blockTask(input, metadataPath, output, id);
+				return null;
 
-		default:
-			KafkaManager.error(id,"Specify task");
+			default:
+				KafkaManager.error(id, "Specify task");
+				System.out.println("Error");
+				throw new Exception("Specify task!");
+			}
+		} catch (Exception e) {
+			KafkaManager.error(id, e.toString());
 			System.out.println("Error");
 			throw new Exception("Specify task!");
 		}
-		} catch(Exception e) {
-			KafkaManager.error(id,e.toString());
-			System.out.println("Error");
-			throw new Exception("Specify task!");
-		}
-//			MyLogger.log.info("Block " + id + " saved !");	
+		// MyLogger.log.info("Block " + id + " saved !");
 	}
-	
+
 	public static void blockTask(String inputPath, String metadataPath, String outputPath, int id) {
 		try {
 			KafkaManager.log(id, "Start process");
-//			XMLFile inputFile = XMLFile.XMLFile(inputPath);
+			// XMLFile inputFile = XMLFile.XMLFile(inputPath);
 			BlocksMetaData md = BlocksMetaData.fromJson(metadataPath);
-			KafkaManager.log(id,"Got metadata !");
+			String jobId = md.getJobId();
+			KafkaProperties.setJobId(jobId);
+			KafkaManager.log(id, "Got metadata !");
 			BasicBlockInfo binfo = md.getBlocksInfo().get(id);
-			KafkaManager.log(id,"Got block info !");
+			KafkaManager.log(id, "Got block info !");
 			BoundingBox bb = new BoundingBox(Util.long2int(binfo.getMin()), Util.long2int(binfo.getMax()));
-			KafkaManager.log(id,"Bounding box created: "+bb.toString());
-			List<ViewId> viewIds = md.getViewIds() ;
-			KafkaManager.log(id,"Got view ids ");
+			KafkaManager.log(id, "Bounding box created: " + bb.toString());
+			List<ViewId> viewIds = md.getViewIds();
+			KafkaManager.log(id, "Got view ids ");
 
-			XMLFile inputFile = XMLFile.XMLFile(inputPath, bb, md.getDownsample() , viewIds);
+			XMLFile inputFile = XMLFile.XMLFile(inputPath, bb, md.getDownsample(), viewIds);
 
-			KafkaManager.log(id,"Input loaded. ");
-//			XMLFile inputFile = XMLFile.XMLFile(inputPath);
+			KafkaManager.log(id, "Input loaded. ");
+			// XMLFile inputFile = XMLFile.XMLFile(inputPath);
 			RandomAccessibleInterval<FloatType> block = inputFile.fuse(bb);
 
-			KafkaManager.log(id,"Got block. ");
+			KafkaManager.log(id, "Got block. ");
 			N5File outputFile = N5File.open(outputPath);
 			outputFile.saveBlock(block, binfo.getGridOffset());
-			KafkaManager.log(id,"Task finished "+id);
-			KafkaManager.done(id,"Task finished "+id);
+			KafkaManager.log(id, "Task finished " + id);
+			KafkaManager.done(id, "Task finished " + id);
 		} catch (SpimDataException | IOException e) {
-			KafkaManager.error(id,e.toString());
+			KafkaManager.error(id, e.toString());
 			e.printStackTrace();
 		}
 	}
@@ -116,7 +120,7 @@ public class MainJob implements Callable<Void> {
 			BlocksMetaData md = BlocksMetaData.fromJson(metadataPath);
 			long[] dims = md.getDimensions();
 			int blockUnit = md.getBlockUnit();
-			N5File outputFile = new N5File(outputPath, dims,blockUnit );
+			N5File outputFile = new N5File(outputPath, dims, blockUnit);
 			outputFile.create();
 			KafkaManager.log(id, "N5 Generated");
 			KafkaManager.done(id, "N5 Generated");
@@ -126,30 +130,34 @@ public class MainJob implements Callable<Void> {
 			e.printStackTrace();
 		}
 	}
-	public static void generateN5fromXML(String inputPath, String metadataPath, String outputPath, int id) {
-	try {
-	System.out.println("Start generating output");
-	XMLFile inputFile = XMLFile.XMLFile(inputPath);
-	RandomAccessibleInterval<FloatType> virtual = inputFile.fuse();
-	String dataset = "/volumes/raw";
-	N5Writer writer = new N5FSWriter(outputPath);
-	BlocksMetaData md = BlocksMetaData.fromJson(metadataPath);
-//	long[] dims = md.getDimensions();
-	int blockUnit = md.getBlockUnit();
-	int[] blocks = Tools.array(blockUnit, virtual.numDimensions());
 
-	N5Utils.save(virtual, writer, dataset, blocks, new RawCompression());
-	System.out.println("Ouptut generated");
-} catch (SpimDataException | IOException e1) {
-	// TODO Auto-generated catch block
-	e1.printStackTrace();
-}
+	public static void generateN5fromXML(String inputPath, String metadataPath, String outputPath, int id) {
+		try {
+			System.out.println("Start generating output");
+			XMLFile inputFile = XMLFile.XMLFile(inputPath);
+			RandomAccessibleInterval<FloatType> virtual = inputFile.fuse();
+			String dataset = "/volumes/raw";
+			N5Writer writer = new N5FSWriter(outputPath);
+			BlocksMetaData md = BlocksMetaData.fromJson(metadataPath);
+			// long[] dims = md.getDimensions();
+			int blockUnit = md.getBlockUnit();
+			int[] blocks = Tools.array(blockUnit, virtual.numDimensions());
+
+			N5Utils.save(virtual, writer, dataset, blocks, new RawCompression());
+			System.out.println("Ouptut generated");
+		} catch (SpimDataException | IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
 
 	public static void main(String[] args) {
-//		new ImageJ();
-//		String str = "-t proc -i /Users/Marwan/Desktop/Task/grid-3d-stitched-h5/dataset.xml -o /Users/Marwan/Desktop/Task/output.n5 -m /Users/Marwan/Desktop/Task/metadata.json -id 1";
-//		System.out.println(String.join(" ", args));
+		// new ImageJ();
+		// String str = "-t proc -i
+		// /Users/Marwan/Desktop/Task/grid-3d-stitched-h5/dataset.xml -o
+		// /Users/Marwan/Desktop/Task/output.n5 -m
+		// /Users/Marwan/Desktop/Task/metadata.json -id 1";
+		// System.out.println(String.join(" ", args));
 		CommandLine.call(new MainJob(), args);
 	}
 }
