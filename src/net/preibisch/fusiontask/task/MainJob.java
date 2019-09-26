@@ -16,12 +16,12 @@ import mpicbg.spim.data.SpimDataException;
 import mpicbg.spim.data.sequence.ViewId;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.real.FloatType;
-import net.imglib2.util.Util;
 import net.preibisch.distribution.algorithm.blockmanager.block.BasicBlockInfo;
 import net.preibisch.distribution.algorithm.clustering.kafka.KafkaManager;
 import net.preibisch.distribution.algorithm.clustering.kafka.KafkaProperties;
 import net.preibisch.distribution.algorithm.clustering.scripting.TaskType;
 import net.preibisch.distribution.algorithm.controllers.items.BlocksMetaData;
+import net.preibisch.distribution.algorithm.task.FusionParams;
 import net.preibisch.distribution.io.img.XMLFile;
 import net.preibisch.distribution.io.img.n5.N5File;
 import net.preibisch.distribution.tools.Tools;
@@ -41,7 +41,12 @@ public class MainJob implements Callable<Void> {
 
 	@Option(names = { "-m", "--meta" }, required = false, description = "The path of the MetaData file")
 	private String metadataPath;
-
+	
+	@Option(names = { "-p", "--param" }, required = false, description = "The path of the MetaData file")
+	private String paramPath;
+	
+	@Option(names = { "-v","-view" }, required = false, description = "The id of block")
+	private int view;
 	@Option(names = { "-id" }, required = false, description = "The id of block")
 	private Integer id;
 
@@ -63,10 +68,10 @@ public class MainJob implements Callable<Void> {
 			TaskType type = TaskType.of(task);
 			switch (type) {
 			case PREPARE:
-				generateN5(input, metadataPath, output, id);
+				generateN5(input, metadataPath,paramPath, output, id,view);
 				return null;
 			case PROCESS:
-				blockTask(input, metadataPath, output, id);
+				blockTask(input, metadataPath, paramPath, output, id,view);
 				return null;
 
 			default:
@@ -82,26 +87,27 @@ public class MainJob implements Callable<Void> {
 		// MyLogger.log.info("Block " + id + " saved !");
 	}
 
-	public static void blockTask(String inputPath, String metadataPath, String outputPath, int id) {
+	public static void blockTask(String inputPath, String metadataPath, String paramPath, String outputPath, int id,int view) {
 		try {
 			KafkaManager.log(id, "Start process");
 			// XMLFile inputFile = XMLFile.XMLFile(inputPath);
 			BlocksMetaData md = BlocksMetaData.fromJson(metadataPath);
+			FusionParams params = FusionParams.fromJson(paramPath);
 			String jobId = md.getJobId();
 			KafkaProperties.setJobId(jobId);
 			KafkaManager.log(id, "Got metadata !");
 			BasicBlockInfo binfo = md.getBlocksInfo().get(id);
 			KafkaManager.log(id, "Got block info !");
-			BoundingBox bb = new BoundingBox(Util.long2int(binfo.getMin()), Util.long2int(binfo.getMax()));
-			KafkaManager.log(id, "Bounding box created: " + bb.toString());
-			List<ViewId> viewIds = md.getViewIds();
+//			BoundingBox bb = new BoundingBox(Util.long2int(binfo.getMin()), Util.long2int(binfo.getMax()));
+			KafkaManager.log(id, "Bounding box created: " + params.getBb().toString());
+			List<ViewId> viewIds = params.getViewIds().get(view);
 			KafkaManager.log(id, "Got view ids ");
 
-			XMLFile inputFile = XMLFile.XMLFile(inputPath, bb, md.getDownsample(), viewIds);
+			XMLFile inputFile = XMLFile.XMLFile(inputPath, params.getBb(), params.getDownsampling(), viewIds);
 
 			KafkaManager.log(id, "Input loaded. ");
 			// XMLFile inputFile = XMLFile.XMLFile(inputPath);
-			RandomAccessibleInterval<FloatType> block = inputFile.fuse(bb);
+			RandomAccessibleInterval<FloatType> block = inputFile.fuse(params.getBb(),view);
 
 			KafkaManager.log(id, "Got block. ");
 			N5File outputFile = N5File.open(outputPath);
@@ -114,11 +120,13 @@ public class MainJob implements Callable<Void> {
 		}
 	}
 
-	public static void generateN5(String inputPath, String metadataPath, String outputPath, int id) {
+	public static void generateN5(String inputPath, String metadataPath,String paramPath, String outputPath, int id,int view) {
 		try {
 			KafkaManager.log(id, "Start generate n5");
 			BlocksMetaData md = BlocksMetaData.fromJson(metadataPath);
-			long[] dims = md.getDimensions();
+			FusionParams params = FusionParams.fromJson(paramPath);
+			BoundingBox bb = new BoundingBox(params.getBb());
+			long[] dims = bb.getDimensions((int)params.getDownsampling());
 			int blockUnit = md.getBlockUnit();
 			N5File outputFile = new N5File(outputPath, dims, blockUnit);
 			outputFile.create();
