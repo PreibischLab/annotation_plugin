@@ -9,11 +9,11 @@
 		<relativePath />
 	</parent>
 	<groupId>net.preibisch</groupId>
-	<artifactId>fusion_task</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
-	<name>Fusion Task</name>
-	<description>Fusion Task for clustering</description>
-	<url>https://github.com/PreibischLab/image-clustering</url>
+	<artifactId>annot</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>Annotation Plugin</name>
+	<description>Annotation Plugin </description>
+	<url>https://github.com/PreibischLab/annotation_plugin</url>
 	<inceptionYear>2019</inceptionYear>
 	<organization>
 		<name>Preibisch Lab</name>
@@ -73,22 +73,22 @@
 	</mailingLists>
 
 	<scm>
-		<connection>scm:git:git://github.com/PreibischLab/image-clustering</connection>
-		<developerConnection>scm:git:git@github.com:PreibischLab/image-clustering</developerConnection>
+		<connection>scm:git:git://github.com/PreibischLab/annotation_plugin</connection>
+		<developerConnection>scm:git:git@github.com:PreibischLab/annotation_plugin</developerConnection>
 		<tag>HEAD</tag>
-		<url>https://github.com/PreibischLab/image-clustering</url>
+		<url>https://github.com/PreibischLab/annotation_plugin</url>
 	</scm>
 	<issueManagement>
 		<system>GitHub Issues</system>
-		<url>https://github.com/PreibischLab/image-clustering/issues</url>
+		<url>https://github.com/PreibischLab/annotation_plugin/issues</url>
 	</issueManagement>
 	<ciManagement>
 		<system>Travis CI</system>
-		<url>https://travis-ci.org/PreibischLab/image-clustering</url>
+		<url>https://travis-ci.org/PreibischLab/annotation_plugin</url>
 	</ciManagement>
 
 	<properties>
-		<package-name>net.preibisch.fusiontask</package-name>
+		<package-name>net.preibisch.ijannot</package-name>
 
 		<license.licenseName>gpl_v2</license.licenseName>
 		<license.copyrightOwners>Image distribution developers.</license.copyrightOwners>
@@ -252,7 +252,7 @@
 					<!-- MainClass in mainfest make a executable jar -->
 					<archive>
 						<manifest>
-							<mainClass>net.preibisch.fusiontask.task.MainJob</mainClass>
+							<mainClass>net.preibisch.ijannot.Main</mainClass>
 						</manifest>
 					</archive>
 
