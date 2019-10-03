@@ -3,7 +3,7 @@ package net.preibisch.ijannot.controllers.listners;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import util.IOFunctions;
+import net.preibisch.ijannot.util.IOFunctions;
 
 public class KeyboardClick implements KeyListener{
 	private final int tab_code = 9;

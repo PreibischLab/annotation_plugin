@@ -3,7 +3,7 @@ package net.preibisch.ijannot.controllers.listners;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import util.IOFunctions;
+import net.preibisch.ijannot.util.IOFunctions;
 
 public class MouseClick implements MouseListener {
 

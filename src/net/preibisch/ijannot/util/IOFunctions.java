@@ -1,4 +1,4 @@
-package util;
+package net.preibisch.ijannot.util;
 
 import javax.swing.SwingUtilities;
 

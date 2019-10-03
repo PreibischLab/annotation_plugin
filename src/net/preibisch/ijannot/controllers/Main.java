@@ -1,4 +1,4 @@
-package net.preibisch.controllers;
+package net.preibisch.ijannot.controllers;
 
 import java.io.File;
 
@@ -8,7 +8,8 @@ import ij.io.Opener;
 import ij.plugin.PlugIn;
 import net.preibisch.ijannot.controllers.listners.KeyboardClick;
 import net.preibisch.ijannot.controllers.listners.MouseClick;
-import util.IOFunctions;
+import net.preibisch.ijannot.controllers.managers.AnnotationManager;
+import net.preibisch.ijannot.util.IOFunctions;
 
 public class Main implements PlugIn {
 
@@ -26,6 +27,10 @@ public class Main implements PlugIn {
 		imp.getCanvas().addKeyListener(new KeyboardClick());
 
 		// Test roi
+		AnnotationManager.add(imp.getRoi());
+//		rm.addRoi(imp.getRoi());
+		
+		
 		imp.setRoi(10, 10, 200, 200);
 		IOFunctions.println("raw: " + imp.getRoi().toString());
 		imp.saveRoi();
