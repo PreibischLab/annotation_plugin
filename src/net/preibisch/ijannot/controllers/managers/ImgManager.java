@@ -7,6 +7,8 @@ import java.util.List;
 
 import com.google.common.io.Files;
 
+import net.preibisch.ijannot.util.IOFunctions;
+
 public class ImgManager {
 	private static ImgManager instance;
 
@@ -14,7 +16,7 @@ public class ImgManager {
 	private String ext;
 	private List<String> toProcess;
 	private List<String> processed;
-	private String current_img;
+	private String current;
 
 	public static void init(String folder, String ext) throws IOException {
 		instance = new ImgManager(folder, ext);
@@ -45,15 +47,18 @@ public class ImgManager {
 		}
 		if (this.toProcess.isEmpty())
 			throw new IOException("Empty folder ! \n No file found with extension: " + this.ext);
+		IOFunctions.println("Found " + this.toProcess.size() + " File found with extension: " + this.ext);
 	}
 
 	public String next() {
-		if (!this.current_img.isEmpty())
-			this.processed.add(this.current_img);
+		if (this.current != null)
+			this.processed.add(this.current);
 		if (this.toProcess.isEmpty())
 			return null;
-		this.current_img = this.toProcess.remove(0);
-		return this.current_img;
+		this.current = this.toProcess.remove(0);
+		IOFunctions.println("Processed:" + this.processed.size() + " |Rest:" + this.toProcess.size() + " |Current: "
+				+ this.current);
+		return this.current;
 	}
 
 }

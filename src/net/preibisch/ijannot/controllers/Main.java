@@ -2,14 +2,15 @@ package net.preibisch.ijannot.controllers;
 
 import java.io.File;
 
-import ij.ImageJ;
 import ij.ImagePlus;
 import ij.io.Opener;
 import ij.plugin.PlugIn;
 import net.preibisch.ijannot.controllers.listners.KeyboardClick;
 import net.preibisch.ijannot.controllers.listners.MouseClick;
 import net.preibisch.ijannot.controllers.managers.AnnotationManager;
+import net.preibisch.ijannot.controllers.managers.ImgManager;
 import net.preibisch.ijannot.util.IOFunctions;
+import net.preibisch.ijnnot.models.Ext;
 
 public class Main implements PlugIn {
 
@@ -37,12 +38,18 @@ public class Main implements PlugIn {
 
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		// String path = "/Users/Marwan/Desktop/Irimia Project/New_data_lif/C1-ND8_DIV0+4h_20x_noConfinment_8_ch_4.tif";
-		String path = "/Users/Marwan/Desktop/Irimia Project/New_data_lif/raw_Tiff/ND8_DIV0+4h_20x_noConfinment_8_ch_4.tif";
+//		String path = "/Users/Marwan/Desktop/Irimia Project/New_data_lif/raw_Tiff/ND8_DIV0+4h_20x_noConfinment_8_ch_4.tif";
+		String folder = "/Users/Marwan/Desktop/Irimia Project/New_data_lif/raw_Tiff/";
 
-		new ImageJ();
+		ImgManager.init(folder, Ext.TIFF);
+		String path = ImgManager.get().next();
+		System.out.println(path);
+		path = ImgManager.get().next();
+		System.out.println(path);
+//		new ImageJ();
 
-		new Main().run(path);
+//		new Main().run(path);
 	}
 }
