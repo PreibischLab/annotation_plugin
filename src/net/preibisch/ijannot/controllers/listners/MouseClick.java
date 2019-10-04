@@ -11,6 +11,7 @@ import net.preibisch.ijannot.util.IOFunctions;
 
 public class MouseClick implements MouseListener {
 	private static Point point;
+	private static final int THRESHOLD = 4;
 
 	@Override
 	public void mousePressed(MouseEvent e) {
@@ -22,6 +23,8 @@ public class MouseClick implements MouseListener {
 	public void mouseReleased(MouseEvent e) {
 		IOFunctions.println("Mouse Released: "+e.getX()+ " - "+e.getY());
 		Dimension d = new Dimension(e.getX()-point.x, e.getY()-point.y);
+		if((d.height<=THRESHOLD)||(d.width<=THRESHOLD))
+			return;
 		Rectangle r = new Rectangle(point, d );
 		CanvasManager.addRect(r);
 	}

@@ -1,6 +1,7 @@
 package net.preibisch.ijannot.controllers.managers;
 
 import java.awt.Rectangle;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,8 @@ public class CanvasManager {
 	private static String path;
 	private static ImagePlus imp;
 
+	private static final String CSV_FILE = "annot.csv";
+
 	public static void start() throws IOException {
 		allAnnot = new ArrayList<>();
 		if (ImgManager.get().hasNext())
@@ -27,10 +30,11 @@ public class CanvasManager {
 	}
 
 	public static void next() {
-		allAnnot.add(currentAnnot);
+		if(currentAnnot!=null)
+			allAnnot.add(currentAnnot);
+		if (imp != null)
+			imp.close();
 		if (ImgManager.get().hasNext()) {
-			if (imp != null)
-				imp.close();
 			path = ImgManager.get().next();
 			IOFunctions.println("Current: " + path);
 			currentAnnot = new Annot(path);
@@ -38,7 +42,9 @@ public class CanvasManager {
 			imp.show();
 			imp.getCanvas().addMouseListener(new MouseClick());
 			imp.getCanvas().addKeyListener(new KeyboardClick());
-		}else {
+		} else {
+			File csv = new File(new File(path).getParent(), CSV_FILE);
+			IOFunctions.generateCSV(allAnnot, csv);
 			IOFunctions.println("All done ! Generate file");
 		}
 	}

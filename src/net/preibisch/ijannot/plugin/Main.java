@@ -1,4 +1,4 @@
-package net.preibisch.ijannot.controllers;
+package net.preibisch.ijannot.plugin;
 
 import java.io.IOException;
 
