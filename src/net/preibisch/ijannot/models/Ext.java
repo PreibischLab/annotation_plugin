@@ -1,4 +1,4 @@
-package net.preibisch.ijnnot.models;
+package net.preibisch.ijannot.models;
 
 public class Ext {
 	public static final String TIFF = "tif";

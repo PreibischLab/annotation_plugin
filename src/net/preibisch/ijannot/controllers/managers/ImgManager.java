@@ -22,17 +22,18 @@ public class ImgManager {
 		instance = new ImgManager(folder, ext);
 	}
 
-	public static ImgManager get() throws Exception {
+	public static ImgManager get() throws RuntimeException {
 		if (instance == null)
-			throw new Exception("Img Manager is not initialized yet \n use init(folder,ext) !");
+			throw new RuntimeException("Img Manager is not initialized yet \n use init(folder,ext) !");
 		return instance;
 	}
 
 	private ImgManager(String folder, String ext) throws IOException {
+		IOFunctions.println("Prepare Img Manager..");
 		this.folder = folder;
 		this.ext = ext;
-		this.toProcess = new ArrayList<String>();
-		this.processed = new ArrayList<String>();
+		this.toProcess = new ArrayList<>();
+		this.processed = new ArrayList<>();
 		prepareList();
 	}
 
@@ -48,6 +49,10 @@ public class ImgManager {
 		if (this.toProcess.isEmpty())
 			throw new IOException("Empty folder ! \n No file found with extension: " + this.ext);
 		IOFunctions.println("Found " + this.toProcess.size() + " File found with extension: " + this.ext);
+	}
+	
+	public boolean hasNext() {
+		return !this.toProcess.isEmpty();
 	}
 
 	public String next() {
