@@ -4,19 +4,19 @@ import java.io.IOException;
 
 import ij.ImageJ;
 import ij.plugin.PlugIn;
-import net.preibisch.ijannot.controllers.managers.CanvasManager;
+import net.preibisch.ijannot.controllers.managers.CanvasAnnotationManager;
 import net.preibisch.ijannot.controllers.managers.ImgManager;
 import net.preibisch.ijannot.models.Ext;
 import net.preibisch.ijannot.view.FolderPickerView;
 
-public class Main implements PlugIn {
+public class AnnotationApplicationV1 implements PlugIn {
 
 	@Override
 	public void run(String s) {
 		try {
 			FolderPickerView f = new FolderPickerView();
 			ImgManager.init(f.getSelectedFile().getAbsolutePath(), Ext.TIFF);
-			CanvasManager.start();
+			CanvasAnnotationManager.start();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -24,6 +24,6 @@ public class Main implements PlugIn {
 
 	public static void main(String[] args) {
 		new ImageJ();
-		new Main().run("");
+		new AnnotationApplicationV1().run("");
 	}
 }

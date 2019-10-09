@@ -21,6 +21,10 @@ import net.preibisch.ijannot.controllers.managers.ImgPlusProc;
 import net.preibisch.ijannot.util.Service;
 
 public class AnalyzeWorkflow {
+	//TODO abstract and extract vars
+	// File result with total
+	//  create interface with all or step by step
+	// generate images out of this result
 	public static void main(String[] args) {
 		new ImageJ();
 

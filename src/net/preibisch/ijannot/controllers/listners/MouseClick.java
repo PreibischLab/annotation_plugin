@@ -6,7 +6,7 @@ import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import net.preibisch.ijannot.controllers.managers.CanvasManager;
+import net.preibisch.ijannot.controllers.managers.TaskManager;
 import net.preibisch.ijannot.util.IOFunctions;
 
 public class MouseClick implements MouseListener {
@@ -26,7 +26,7 @@ public class MouseClick implements MouseListener {
 		if((d.height<=THRESHOLD)||(d.width<=THRESHOLD))
 			return;
 		Rectangle r = new Rectangle(point, d );
-		CanvasManager.addRect(r);
+		TaskManager.get().add(r);
 	}
 	
 	@Override

@@ -13,7 +13,7 @@ import net.preibisch.ijannot.controllers.listners.MouseClick;
 import net.preibisch.ijannot.models.Annot;
 import net.preibisch.ijannot.util.IOFunctions;
 
-public class CanvasManager {
+public class CanvasAnnotationManager {
 	private static Annot currentAnnot;
 	private static List<Annot> allAnnot;
 	private static String path;

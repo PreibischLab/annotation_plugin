@@ -3,7 +3,7 @@ package net.preibisch.ijannot.controllers.listners;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import net.preibisch.ijannot.controllers.managers.CanvasManager;
+import net.preibisch.ijannot.controllers.managers.TaskManager;
 import net.preibisch.ijannot.util.IOFunctions;
 
 public class KeyboardClick implements KeyListener{
@@ -15,11 +15,11 @@ public class KeyboardClick implements KeyListener{
 		IOFunctions.println("Key Clicked ExtendedKeyCode:"+e.getExtendedKeyCode());
 		if(e.getExtendedKeyCode()==TAB_BUTTON) {
 			IOFunctions.println("Next !" );
-			CanvasManager.next();
+			TaskManager.get().next();
 		}
 		if(e.getExtendedKeyCode()==Z_BUTTON) {
 			IOFunctions.println("Next !" );
-			CanvasManager.undo();
+			TaskManager.get().undo();
 		}
 	}
 
