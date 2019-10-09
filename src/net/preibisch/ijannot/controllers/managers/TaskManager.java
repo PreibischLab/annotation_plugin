@@ -24,7 +24,9 @@ public class TaskManager {
 
 	public static void init(int task) throws Exception {
 		switch (task) {
-		case ANNOTATION_TASK | ANALYZE_TASK | GENERATE_TRAIN_IMAGE_TASK:
+		case ANNOTATION_TASK:
+		case ANALYZE_TASK:
+		case GENERATE_TRAIN_IMAGE_TASK:
 			instance = new TaskManager(task);
 			break;
 		default:

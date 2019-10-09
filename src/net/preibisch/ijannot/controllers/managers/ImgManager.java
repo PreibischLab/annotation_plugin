@@ -21,6 +21,10 @@ public class ImgManager {
 	public static void init(String folder, String ext) throws IOException {
 		instance = new ImgManager(folder, ext);
 	}
+	
+	public String getFolder() {
+		return folder;
+	}
 
 	public static ImgManager get() throws RuntimeException {
 		if (instance == null)

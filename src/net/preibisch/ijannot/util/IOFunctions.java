@@ -9,7 +9,6 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 
 import ij.IJ;
-import net.preibisch.ijannot.models.Annot;
 
 public class IOFunctions {
 	public static boolean printIJLog = true;
@@ -24,7 +23,7 @@ public class IOFunctions {
 			System.out.println(string);
 	}
 
-	public static void generateCSV(List<Annot> allAnnot, File file) {
+	public static <T> void generateCSV(List<T> list, File file) {
 		println("creating CSV: " + file.getAbsolutePath());
 		
 		try {
@@ -36,7 +35,7 @@ public class IOFunctions {
 			
 		try (FileWriter csvWriter = new FileWriter(file)) {
 
-			for (Annot a : allAnnot) {
+			for (Object a : list) {
 				String s = a.toString();
 				csvWriter.append(s);
 			}

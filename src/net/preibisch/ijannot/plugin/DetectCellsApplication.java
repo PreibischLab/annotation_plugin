@@ -1,16 +1,16 @@
 package net.preibisch.ijannot.plugin;
 
+import java.io.IOException;
+
 import ij.ImageJ;
 import ij.plugin.PlugIn;
 import net.imagej.ops.OpService;
-import net.preibisch.ijannot.controllers.managers.AnalyzeManager;
 import net.preibisch.ijannot.controllers.managers.ImgManager;
-import net.preibisch.ijannot.controllers.managers.TaskManager;
 import net.preibisch.ijannot.models.Ext;
 import net.preibisch.ijannot.util.Service;
 import net.preibisch.ijannot.view.FolderPickerView;
 
-public class TrainingDataGeneratorApplication implements PlugIn {
+public class DetectCellsApplication implements PlugIn {
 
 	private OpService ops;
 
@@ -18,11 +18,11 @@ public class TrainingDataGeneratorApplication implements PlugIn {
 	public void run(String s) {
 		try {
 			this.ops = Service.getOps();
-			TaskManager.init(TaskManager.GENERATE_TRAIN_IMAGE_TASK);
 			FolderPickerView f = new FolderPickerView();
 			ImgManager.init(f.getSelectedFile().getAbsolutePath(), Ext.TIFF);
-			AnalyzeManager.start();
-		} catch (Exception e) {
+			
+//			CanvasManager.start();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
@@ -30,6 +30,6 @@ public class TrainingDataGeneratorApplication implements PlugIn {
 	public static void main(String[] args) {
 		new ImageJ();
 	
-		new TrainingDataGeneratorApplication().run("");
+		new DetectCellsApplication().run("");
 	}
 }

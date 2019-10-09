@@ -1,6 +1,12 @@
-package net.preibisch.ijannot.plugin;
+package net.preibisch.ijannot.controllers.managers;
 
-import ij.ImageJ;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.io.FilenameUtils;
+
 import ij.ImagePlus;
 import ij.measure.Measurements;
 import ij.measure.ResultsTable;
@@ -8,38 +14,75 @@ import ij.plugin.filter.Analyzer;
 import ij.plugin.filter.EDM;
 import ij.plugin.filter.ParticleAnalyzer;
 import net.imagej.ops.OpService;
-import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
-import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
-import net.imglib2.type.Type;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.util.Util;
-import net.preibisch.ijannot.controllers.managers.ImgPlusProc;
+import net.preibisch.ijannot.controllers.tasks.AnalyzeTasks;
+import net.preibisch.ijannot.util.IOFunctions;
+import net.preibisch.ijannot.util.Log;
 import net.preibisch.ijannot.util.Service;
 
-public class AnalyzeWorkflow {
-	//TODO abstract and extract vars
-	// File result with total
-	//  create interface with all or step by step
-	// generate images out of this result
-	public static void main(String[] args) {
-		new ImageJ();
+public class AnalyzeManager {
+	private static List<String> log;
 
-		// Service init
-		Service.init();
-		OpService ops = Service.opService;
+	public static void start() throws IOException {
+		log = new ArrayList<>();
+		if (ImgManager.get().hasNext())
+			next();
+		else
+			throw new IOException("Empty folder !");
+	}
 
-		// File prepare
-		String path = "/Users/Marwan/Desktop/Irimia Project/New_data_lif/raw_Tiff/ND8_DIV0+4h_20x_noConfinment_3_ch_4.tif";
+	private static void next() {
+		while (ImgManager.get().hasNext()) {
+			String path = ImgManager.get().next();
+			ResultsTable rt = process(path);
+			if (rt == null) {
+				log.add("Empty: "+path);
+			} else {
+				save(rt, resultName(path));
+			}
+		}
+		File logFile = new File(ImgManager.get().getFolder(),"log.txt");
+		IOFunctions.generateCSV(log, logFile);
+		Log.print("Done with all files");
+	}
+
+	private static void save(ResultsTable rt, File file) {
+		List<String> list = new ArrayList<>();
+		list.add("\"x\",\"y\"");
+
+		for (int i = 0; i < rt.size(); i++) {
+			double x = rt.getValueAsDouble(rt.getColumnIndex("XM"), i);
+			double y = rt.getValueAsDouble(rt.getColumnIndex("YM"), i);
+
+			StringBuilder bld = new StringBuilder();
+			bld.append(x);
+			bld.append(",");
+			bld.append(y);
+			bld.append("\n");
+			list.add(bld.toString());
+		}
+		IOFunctions.generateCSV(list, file);
+	}
+
+	private static File resultName(String path) {
+		File f = new File(path);
+		return new File(f.getParent(), FilenameUtils.removeExtension(f.getName()) + ".csv");
+
+	}
+
+	private static ResultsTable process(String path) {
+		OpService ops = Service.getOps();
 		ImagePlus imp = ImgPlusProc.getChannel(path, 1);
 		Img<UnsignedByteType> image = ImageJFunctions.wrap(imp);
 		final Object type = Util.getTypeFromInterval(image);
 		System.out.println("Pixel Type: " + type.getClass());
 		System.out.println("Img Type: " + image.getClass());
-		imp.show();
+		// imp.show();
 
 		// Gauss
 		image = (Img<UnsignedByteType>) ops.filter().gauss(image, 3.0);
@@ -47,35 +90,31 @@ public class AnalyzeWorkflow {
 		// Threshold
 		IterableInterval<BitType> maskBitType = ops.threshold().apply(image, new UnsignedByteType(15));
 		Img<BitType> target = image.factory().imgFactory(new BitType()).create(image, new BitType());
-		copy(target, maskBitType);
+		AnalyzeTasks.copy(target, maskBitType);
 
 		// Watershed
 		ImagePlus water = ImageJFunctions.wrap(target, "target");
 		EDM edm = new EDM();
 		edm.toWatershed(water.getProcessor());
-		water.show();
+		// water.show();
 
-		//Invert
-		
-        final UnsignedByteType c = new UnsignedByteType();
-        Img<UnsignedByteType> inv = ImageJFunctions.wrap(water);
-//        if(true) return;
-        for ( final UnsignedByteType t : inv )
-        {
-        	
-            c.set( t );
-            int x = c.getInteger();
-            if(x==0) t.setInteger(255);
-            else
-            	t.setInteger(0);
+		// Invert
+		final UnsignedByteType c = new UnsignedByteType();
+		Img<UnsignedByteType> inv = ImageJFunctions.wrap(water);
 
-        }
-        ImagePlus inverted = ImageJFunctions.wrap(inv, "inverted");
-//        ImageJFunctions.show(nn);
-        
-//		IJ.run(command);
-//		ij.plugin.filter.Filters("invert")
-		
+		for (final UnsignedByteType t : inv) {
+
+			c.set(t);
+			int x = c.getInteger();
+			if (x == 0)
+				t.setInteger(255);
+			else
+				t.setInteger(0);
+
+		}
+		ImagePlus inverted = ImageJFunctions.wrap(inv, "inverted");
+		// ImageJFunctions.show(nn);
+
 		// Particle analyze
 		double minSize = Math.PI * Math.pow((1.0 / 2), 2.0);
 		double maxSize = Math.PI * Math.pow((1000.0 / 2), 2.0);
@@ -83,7 +122,7 @@ public class AnalyzeWorkflow {
 		int x = ParticleAnalyzer.EXCLUDE_EDGE_PARTICLES;
 
 		int opts = ParticleAnalyzer.EXCLUDE_EDGE_PARTICLES | ParticleAnalyzer.SHOW_PROGRESS
-				| ParticleAnalyzer.CLEAR_WORKSHEET ;
+				| ParticleAnalyzer.CLEAR_WORKSHEET;
 		int meas = Measurements.AREA | Measurements.MEAN | Measurements.CENTER_OF_MASS;
 		ResultsTable rt = new ResultsTable();
 		ParticleAnalyzer analyzer = new ParticleAnalyzer(opts, meas, rt, minSize, maxSize);
@@ -91,8 +130,10 @@ public class AnalyzeWorkflow {
 
 		analyzer.analyze(inverted);
 		System.out.println("Length of result table: " + rt.size());
-		if (rt.size() == 0)
-			return;
+		if (rt.size() == 0) {
+			Log.print(path + ": is Empty !");
+			return null;
+		}
 		int i = 0;
 		double dot_area = -1, dot_x = -1, dot_y = -1, dot_mean = -1;
 		dot_area = rt.getValueAsDouble(rt.getColumnIndex("Area"), i);
@@ -101,17 +142,7 @@ public class AnalyzeWorkflow {
 		dot_y = rt.getValueAsDouble(rt.getColumnIndex("YM"), i);
 
 		System.out.println("dot_area:" + dot_area + " |dot_mean:" + dot_mean + " |dot_x:" + dot_x + " |dot_y:" + dot_y);
-
-	}
-
-	public static <T extends Type<T>> void copy(final Img<BitType> target, final IterableInterval<BitType> source) {
-		Cursor<BitType> c = source.cursor();
-		RandomAccess<BitType> t = target.randomAccess();
-		while (c.hasNext()) {
-			c.fwd();
-			t.setPosition(c);
-			t.get().set(c.get());
-		}
+		return rt;
 	}
 
 }

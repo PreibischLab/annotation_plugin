@@ -1,4 +1,4 @@
-package net.preibisch.ijannot.plugin;
+package net.preibisch.ijannot.test;
 
 import ij.CompositeImage;
 import ij.ImageJ;

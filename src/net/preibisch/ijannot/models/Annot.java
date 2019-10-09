@@ -7,7 +7,7 @@ import java.util.List;
 import net.preibisch.ijannot.util.IOFunctions;
 import net.preibisch.ijannot.util.Log;
 
-public class Annot {
+public class Annot extends Object{
 	String img;
 	List<Rectangle> list;
 
