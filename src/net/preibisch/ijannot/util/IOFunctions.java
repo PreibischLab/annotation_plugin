@@ -8,6 +8,8 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
+import org.apache.commons.io.FileUtils;
+
 import ij.IJ;
 
 public class IOFunctions {
@@ -25,14 +27,15 @@ public class IOFunctions {
 
 	public static <T> void generateCSV(List<T> list, File file) {
 		println("creating CSV: " + file.getAbsolutePath());
-		
-		try {
-			Files.delete(file.toPath());
-		} catch (IOException e) {
-			Log.error(e.toString());
-			return;
+		if (file.exists()) {
+			try {
+				Files.delete(file.toPath());
+			} catch (IOException e) {
+				Log.error(e.toString());
+				return;
+			}
 		}
-			
+
 		try (FileWriter csvWriter = new FileWriter(file)) {
 
 			for (Object a : list) {
@@ -44,6 +47,16 @@ public class IOFunctions {
 			csvWriter.close();
 		} catch (IOException e) {
 			Log.error(e.toString());
+		}
+	}
+
+	public static void mkdir(File file) {
+		try {
+			if (file.exists())
+				FileUtils.deleteDirectory(file);
+			file.mkdir();
+		} catch (IOException e) {
+			Log.error("Can't delete folder : " + e.toString());
 		}
 	}
 

@@ -27,9 +27,11 @@ import net.preibisch.ijannot.util.Service;
 
 public class AnalyzeManager {
 	private static List<String> log;
+	private static List<String> total;
 
 	public static void start() throws IOException {
 		log = new ArrayList<>();
+		total = new ArrayList<>();
 		if (ImgManager.get().hasNext())
 			next();
 		else
@@ -48,12 +50,14 @@ public class AnalyzeManager {
 		}
 		File logFile = new File(ImgManager.get().getFolder(),"log.txt");
 		IOFunctions.generateCSV(log, logFile);
+		File totalFile = new File(ImgManager.get().getFolder(),"total.csv");
+		IOFunctions.generateCSV(total, totalFile);
 		Log.print("Done with all files");
 	}
 
 	private static void save(ResultsTable rt, File file) {
 		List<String> list = new ArrayList<>();
-		list.add("\"x\",\"y\"");
+		list.add("\"x\",\"y\"\n");
 
 		for (int i = 0; i < rt.size(); i++) {
 			double x = rt.getValueAsDouble(rt.getColumnIndex("XM"), i);
@@ -66,6 +70,7 @@ public class AnalyzeManager {
 			bld.append("\n");
 			list.add(bld.toString());
 		}
+		total.add("\""+file.getAbsolutePath()+"\","+(list.size()-1)+"\n");
 		IOFunctions.generateCSV(list, file);
 	}
 
