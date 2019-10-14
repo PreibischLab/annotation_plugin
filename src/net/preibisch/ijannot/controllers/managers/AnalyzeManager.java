@@ -24,6 +24,7 @@ import net.preibisch.ijannot.controllers.tasks.AnalyzeTasks;
 import net.preibisch.ijannot.util.IOFunctions;
 import net.preibisch.ijannot.util.Log;
 import net.preibisch.ijannot.util.Service;
+import net.preibisch.ijannot.view.AnalyzeParams;
 
 public class AnalyzeManager {
 	private static List<String> log;
@@ -82,7 +83,7 @@ public class AnalyzeManager {
 
 	private static ResultsTable process(String path) {
 		OpService ops = Service.getOps();
-		ImagePlus imp = ImgPlusProc.getChannel(path, 1);
+		ImagePlus imp = ImgPlusProc.getChannel(path, AnalyzeParams.get().getChannel());
 		Img<UnsignedByteType> image = ImageJFunctions.wrap(imp);
 		final Object type = Util.getTypeFromInterval(image);
 		System.out.println("Pixel Type: " + type.getClass());
@@ -90,10 +91,10 @@ public class AnalyzeManager {
 		// imp.show();
 
 		// Gauss
-		image = (Img<UnsignedByteType>) ops.filter().gauss(image, 3.0);
+		image = (Img<UnsignedByteType>) ops.filter().gauss(image, AnalyzeParams.get().getGauss());
 
 		// Threshold
-		IterableInterval<BitType> maskBitType = ops.threshold().apply(image, new UnsignedByteType(15));
+		IterableInterval<BitType> maskBitType = ops.threshold().apply(image, new UnsignedByteType(AnalyzeParams.get().getThreshold()));
 		Img<BitType> target = image.factory().imgFactory(new BitType()).create(image, new BitType());
 		AnalyzeTasks.copy(target, maskBitType);
 
@@ -121,8 +122,8 @@ public class AnalyzeManager {
 		// ImageJFunctions.show(nn);
 
 		// Particle analyze
-		double minSize = Math.PI * Math.pow((1.0 / 2), 2.0);
-		double maxSize = Math.PI * Math.pow((1000.0 / 2), 2.0);
+		double minSize = Math.PI * Math.pow((AnalyzeParams.get().getMin() / 2), 2.0);
+		double maxSize = Math.PI * Math.pow((AnalyzeParams.get().getMax() / 2), 2.0);
 		System.out.println("Min: " + minSize + " | max:" + maxSize);
 		int x = ParticleAnalyzer.EXCLUDE_EDGE_PARTICLES;
 
@@ -140,11 +141,10 @@ public class AnalyzeManager {
 			return null;
 		}
 		int i = 0;
-		double dot_area = -1, dot_x = -1, dot_y = -1, dot_mean = -1;
-		dot_area = rt.getValueAsDouble(rt.getColumnIndex("Area"), i);
-		dot_mean = rt.getValueAsDouble(rt.getColumnIndex("Mean"), i);
-		dot_x = rt.getValueAsDouble(rt.getColumnIndex("XM"), i);
-		dot_y = rt.getValueAsDouble(rt.getColumnIndex("YM"), i);
+		double dot_area = rt.getValueAsDouble(rt.getColumnIndex("Area"), i);
+		double dot_mean = rt.getValueAsDouble(rt.getColumnIndex("Mean"), i);
+		double dot_x = rt.getValueAsDouble(rt.getColumnIndex("XM"), i);
+		double dot_y = rt.getValueAsDouble(rt.getColumnIndex("YM"), i);
 
 		System.out.println("dot_area:" + dot_area + " |dot_mean:" + dot_mean + " |dot_x:" + dot_x + " |dot_y:" + dot_y);
 		return rt;
