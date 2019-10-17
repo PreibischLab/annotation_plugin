@@ -8,7 +8,7 @@ import net.imagej.ops.OpService;
 import net.preibisch.ijannot.controllers.managers.ImgManager;
 import net.preibisch.ijannot.models.Ext;
 import net.preibisch.ijannot.util.Service;
-import net.preibisch.ijannot.view.AnalyzeParams;
+import net.preibisch.ijannot.view.AnalyzeParamsView;
 import net.preibisch.ijannot.view.FolderPickerView;
 
 public class DetectCellsApplication implements PlugIn {
@@ -22,7 +22,7 @@ public class DetectCellsApplication implements PlugIn {
 			FolderPickerView f = new FolderPickerView();
 			
 			ImgManager.init(f.getSelectedFile().getAbsolutePath(), Ext.TIFF);
-			AnalyzeParams.init();
+			AnalyzeParamsView.init();
 			
 		} catch (IOException e) {
 			e.printStackTrace();

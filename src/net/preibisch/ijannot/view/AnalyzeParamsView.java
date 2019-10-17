@@ -16,8 +16,8 @@ import javax.swing.border.Border;
 import net.preibisch.ijannot.controllers.managers.AnalyzeManager;
 import net.preibisch.ijannot.util.IOFunctions;
 
-public class AnalyzeParams extends JFrame implements ActionListener {
-	private static AnalyzeParams instance;
+public class AnalyzeParamsView extends JFrame implements ActionListener {
+	private static AnalyzeParamsView instance;
 	private static String TITLE = "Analyze Params";
 	
 	private static final double MIN_ANALYZE = 1.0;
@@ -38,7 +38,7 @@ public class AnalyzeParams extends JFrame implements ActionListener {
 	private JTextField thresholdField;
 
 	
-	private AnalyzeParams(double min, double max, double gauss, int channel, int threshold) {
+	private AnalyzeParamsView(double min, double max, double gauss, int channel, int threshold) {
 		super(TITLE);
 		this.min = min;
 		this.max = max;
@@ -47,10 +47,10 @@ public class AnalyzeParams extends JFrame implements ActionListener {
 		this.threshold = threshold;
 	}
 
-	public static AnalyzeParams get() {
+	public static AnalyzeParamsView get() {
 		if(instance != null)
 			return instance;
-		return new AnalyzeParams(MIN_ANALYZE, MAX_ANALYZE, GAUSS, CHANNEL, THRESHOLD);
+		return new AnalyzeParamsView(MIN_ANALYZE, MAX_ANALYZE, GAUSS, CHANNEL, THRESHOLD);
 	}
 	
 	public static void init() {
@@ -138,7 +138,7 @@ public class AnalyzeParams extends JFrame implements ActionListener {
 	}
 
 	public static void main(String[] args) {
-		AnalyzeParams.init();
+		AnalyzeParamsView.init();
 	}
 
 }

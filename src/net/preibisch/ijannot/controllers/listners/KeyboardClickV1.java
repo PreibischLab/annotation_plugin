@@ -6,7 +6,7 @@ import java.awt.event.KeyListener;
 import net.preibisch.ijannot.controllers.managers.TaskManager;
 import net.preibisch.ijannot.util.IOFunctions;
 
-public class KeyboardClick implements KeyListener{
+public class KeyboardClickV1 implements KeyListener{
 	private static final int TAB_BUTTON = 9;
 	private static final int Z_BUTTON = 90;
 

@@ -9,6 +9,7 @@ public class TaskManager {
 	public static final int ANNOTATION_TASK = 0;
 	public static final int ANALYZE_TASK = 1;
 	public static final int GENERATE_TRAIN_IMAGE_TASK = 2;
+	public static final int ANNOTATE_TRAIN_IMAGE_TASK = 3;
 
 	private int currentTask;
 
@@ -27,6 +28,7 @@ public class TaskManager {
 		case ANNOTATION_TASK:
 		case ANALYZE_TASK:
 		case GENERATE_TRAIN_IMAGE_TASK:
+		case ANNOTATE_TRAIN_IMAGE_TASK:
 			instance = new TaskManager(task);
 			break;
 		default:
@@ -39,6 +41,9 @@ public class TaskManager {
 		switch (currentTask) {
 		case ANNOTATION_TASK:
 			CanvasAnnotationManager.next();
+			break;
+		case ANNOTATE_TRAIN_IMAGE_TASK:
+			CanvasAnnotationManagerV2.next();
 			break;
 
 		default:

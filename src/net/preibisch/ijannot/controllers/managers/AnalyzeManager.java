@@ -24,7 +24,7 @@ import net.preibisch.ijannot.controllers.tasks.AnalyzeTasks;
 import net.preibisch.ijannot.util.IOFunctions;
 import net.preibisch.ijannot.util.Log;
 import net.preibisch.ijannot.util.Service;
-import net.preibisch.ijannot.view.AnalyzeParams;
+import net.preibisch.ijannot.view.AnalyzeParamsView;
 
 public class AnalyzeManager {
 	private static final String CSVFolder = "CSV";
@@ -85,7 +85,7 @@ public class AnalyzeManager {
 
 	private static ResultsTable process(String path) {
 		OpService ops = Service.getOps();
-		ImagePlus imp = ImgPlusProc.getChannel(path, AnalyzeParams.get().getChannel());
+		ImagePlus imp = ImgPlusProc.getChannel(path, AnalyzeParamsView.get().getChannel());
 		Img<UnsignedByteType> image = ImageJFunctions.wrap(imp);
 		final Object type = Util.getTypeFromInterval(image);
 		System.out.println("Pixel Type: " + type.getClass());
@@ -93,10 +93,10 @@ public class AnalyzeManager {
 		// imp.show();
 
 		// Gauss
-		image = (Img<UnsignedByteType>) ops.filter().gauss(image, AnalyzeParams.get().getGauss());
+		image = (Img<UnsignedByteType>) ops.filter().gauss(image, AnalyzeParamsView.get().getGauss());
 
 		// Threshold
-		IterableInterval<BitType> maskBitType = ops.threshold().apply(image, new UnsignedByteType(AnalyzeParams.get().getThreshold()));
+		IterableInterval<BitType> maskBitType = ops.threshold().apply(image, new UnsignedByteType(AnalyzeParamsView.get().getThreshold()));
 		Img<BitType> target = image.factory().imgFactory(new BitType()).create(image, new BitType());
 		AnalyzeTasks.copy(target, maskBitType);
 
@@ -124,8 +124,8 @@ public class AnalyzeManager {
 		// ImageJFunctions.show(nn);
 
 		// Particle analyze
-		double minSize = Math.PI * Math.pow((AnalyzeParams.get().getMin() / 2), 2.0);
-		double maxSize = Math.PI * Math.pow((AnalyzeParams.get().getMax() / 2), 2.0);
+		double minSize = Math.PI * Math.pow((AnalyzeParamsView.get().getMin() / 2), 2.0);
+		double maxSize = Math.PI * Math.pow((AnalyzeParamsView.get().getMax() / 2), 2.0);
 		System.out.println("Min: " + minSize + " | max:" + maxSize);
 		int x = ParticleAnalyzer.EXCLUDE_EDGE_PARTICLES;
 

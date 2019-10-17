@@ -70,4 +70,14 @@ public class ImgManager {
 		return this.current;
 	}
 
+	public void undo() {
+		if(this.processed.isEmpty()) {
+			IOFunctions.println("Processed is empty !");
+			return;
+		}
+		this.toProcess.add(0, this.current);
+		this.toProcess.add(0, this.processed.get(this.processed.size()-1));
+		this.current = null;
+	}
+
 }
