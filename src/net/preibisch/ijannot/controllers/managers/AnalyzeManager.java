@@ -27,10 +27,14 @@ import net.preibisch.ijannot.util.Service;
 import net.preibisch.ijannot.view.AnalyzeParams;
 
 public class AnalyzeManager {
+	private static final String CSVFolder = "CSV";
 	private static List<String> log;
 	private static List<String> total;
+	private static File resultPath;
 
 	public static void start() throws IOException {
+		resultPath = new File(ImgManager.get().getFolder(),CSVFolder);
+		IOFunctions.mkdir(resultPath);
 		log = new ArrayList<>();
 		total = new ArrayList<>();
 		if (ImgManager.get().hasNext())
@@ -46,7 +50,7 @@ public class AnalyzeManager {
 			if (rt == null) {
 				log.add("Empty: "+path);
 			} else {
-				save(rt, resultName(path));
+				save(rt, resultName(resultPath,path));
 			}
 		}
 		File logFile = new File(ImgManager.get().getFolder(),"log.txt");
@@ -75,10 +79,8 @@ public class AnalyzeManager {
 		IOFunctions.generateCSV(list, file);
 	}
 
-	private static File resultName(String path) {
-		File f = new File(path);
-		return new File(f.getParent(), FilenameUtils.removeExtension(f.getName()) + ".csv");
-
+	private static File resultName(File folder, String input) {
+		return new File(folder, FilenameUtils.removeExtension(new File(input).getName()) + ".csv");
 	}
 
 	private static ResultsTable process(String path) {

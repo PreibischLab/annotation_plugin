@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 
+import ij.IJ;
 import ij.ImagePlus;
 import javafx.geometry.Point2D;
 import net.imglib2.RandomAccessibleInterval;
@@ -27,9 +28,10 @@ public class TrainDataGenerator {
 	private static List<String> log;
 	private static List<String> total;
 	private static File folder;
+	private static final int blockSize = 40;
 
 	public static void start() throws IOException {
-		folder = new File(ImgManager.get().getFolder(), "blocks");
+		folder = new File(new File(ImgManager.get().getFolder()).getParent(), "blocks");
 		IOFunctions.mkdir(folder);
 
 		log = new ArrayList<>();
@@ -43,20 +45,22 @@ public class TrainDataGenerator {
 	private static void next() {
 		while (ImgManager.get().hasNext()) {
 			String path = ImgManager.get().next();
-			process(path);
-			return;
+			IOFunctions.println("File to process: "+path);
+			process(new File(path));
+//			return;
 		}
-		// File logFile = new File(ImgManager.get().getFolder(),"log.txt");
-		// IOFunctions.generateCSV(log, logFile);
+		 File logFile = new File(folder,"log.txt");
+		 IOFunctions.generateCSV(log, logFile);
 		// File totalFile = new File(ImgManager.get().getFolder(),"total.csv");
 		// IOFunctions.generateCSV(total, totalFile);
-		// Log.print("Done with all files");
+		 Log.print("Done with all files");
 	}
 
-	private static void process(String csv) {
+	private static void process(File csv) {
 
-		File tif = new File(FilenameUtils.removeExtension(csv) + "." + Ext.TIFF);
-		ImagePlus imp = ImgPlusProc.getChannel(tif.toString(), 2);
+		File tif = new File(csv.getParentFile().getParent(),FilenameUtils.removeExtension(csv.getName()) + "." + Ext.TIFF);
+		IOFunctions.println("Tif to process: "+tif.getAbsolutePath());
+		ImagePlus imp = ImgPlusProc.getComposite(tif.getAbsolutePath());
 		Img<UnsignedByteType> image = ImageJFunctions.wrap(imp);
 		final Object type = Util.getTypeFromInterval(image);
 		System.out.println("Pixel Type: " + type.getClass());
@@ -64,10 +68,15 @@ public class TrainDataGenerator {
 		List<Point2D> list = getPointFromFile(csv);
 		int i = 0;
 		for (Point2D p : list) {
-			RandomAccessibleInterval<UnsignedByteType> block = block(image,p,20);
-			ImageJFunctions.show(block);
-			if(i>5) return;
+			try{RandomAccessibleInterval<UnsignedByteType> block = block(image,p,blockSize );
+			String imPath = new File(folder,FilenameUtils.removeExtension(csv.getName()) +"_"+i +"." + Ext.TIFF).getAbsolutePath();
+			ImagePlus im = ImageJFunctions.wrap(block,imPath );
+			IJ.save(im, imPath);
 			i++;
+			}catch(Exception exc) {
+				String l = "Error: "+p.toString() +"  "+i + tif.getName();
+				log.add(l);
+			}
 		}
 	}
 
@@ -81,8 +90,9 @@ public class TrainDataGenerator {
                 Views.interval( image, new long[] { x1, y1 }, new long[]{ x2, y2 } );
 		return view;
 	}
+	
 
-	private static List<Point2D> getPointFromFile(String csv) {
+	private static List<Point2D> getPointFromFile(File csv) {
 		List<Point2D> list = new ArrayList<>();
 		try (BufferedReader csvReader = new BufferedReader(new FileReader(csv))) {
 			String row = csvReader.readLine();

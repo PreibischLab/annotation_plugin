@@ -13,6 +13,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 
+import net.preibisch.ijannot.controllers.managers.AnalyzeManager;
+import net.preibisch.ijannot.util.IOFunctions;
+
 public class AnalyzeParams extends JFrame implements ActionListener {
 	private static AnalyzeParams instance;
 	private static String TITLE = "Analyze Params";
@@ -125,15 +128,13 @@ public class AnalyzeParams extends JFrame implements ActionListener {
 		threshold = Integer.parseInt(thresholdField.getText());		
 		min = Double.parseDouble(minField.getText());
 		max = Double.parseDouble(maxField.getText());
-		next();
+		IOFunctions.println("Here");
+		AnalyzeManager.start();
+		this.setVisible(false);
+		this.dispose();
 		}catch(Exception ex) {
 			JOptionPane.showMessageDialog(null, ex.toString(), "Error !" , JOptionPane.ERROR_MESSAGE);
 		}
-		
-	}
-	private void next() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public static void main(String[] args) {
