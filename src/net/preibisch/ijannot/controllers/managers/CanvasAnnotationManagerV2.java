@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import ij.IJ;
 import ij.ImagePlus;
 import ij.io.Opener;
 import net.preibisch.ijannot.controllers.listners.KeyboardClickV2;
@@ -34,6 +35,9 @@ public class CanvasAnnotationManagerV2 {
 			IOFunctions.println("Current: " + path);
 			imp = new Opener().openImage(path);
 			imp.show();
+			for(int i=0;i< 4; i++)
+				IJ.run("In [+]", "");
+			
 //			imp.getCanvas().addMouseListener(new MouseClick());
 			imp.getCanvas().addKeyListener(new KeyboardClickV2());
 		} else {
