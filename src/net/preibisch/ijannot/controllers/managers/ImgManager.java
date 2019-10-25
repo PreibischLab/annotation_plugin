@@ -59,6 +59,11 @@ public class ImgManager {
 		return !this.toProcess.isEmpty();
 	}
 
+	public String test() {
+		if (this.toProcess.isEmpty())
+			return null;
+		return this.toProcess.get(0);
+	}
 	public String next() {
 		if (this.current != null)
 			this.processed.add(this.current);

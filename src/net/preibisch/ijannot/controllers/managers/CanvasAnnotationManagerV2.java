@@ -42,17 +42,9 @@ public class CanvasAnnotationManagerV2 {
 	}
 
 	public static void exit() {	
-		try {
 			File csv = new File(new File(path).getParent(), CSV_FILE);
 			IOFunctions.generateCSV(allAnnot, csv);
-			IOFunctions.println("All done ! Generate file");
-			Thread.sleep(5000);
-			System.exit(0);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+			IOFunctions.println("All done ! Generate file");	
 	}
 
 	public static void add(int category) {

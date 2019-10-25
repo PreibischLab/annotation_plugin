@@ -43,6 +43,10 @@ public class AnalyzeManager {
 			throw new IOException("Empty folder !");
 	}
 
+	public static void test() {
+		String path = ImgManager.get().test();
+		process(path,true);	
+	}
 	private static void next() {
 		while (ImgManager.get().hasNext()) {
 			String path = ImgManager.get().next();
@@ -84,32 +88,41 @@ public class AnalyzeManager {
 	}
 
 	private static ResultsTable process(String path) {
+		return process(path, false);
+	}
+	private static ResultsTable process(String path,Boolean testMode) {
 		OpService ops = Service.getOps();
 		ImagePlus imp = ImgPlusProc.getChannel(path, AnalyzeParamsView.get().getChannel());
 		Img<UnsignedByteType> image = ImageJFunctions.wrap(imp);
 		final Object type = Util.getTypeFromInterval(image);
 		System.out.println("Pixel Type: " + type.getClass());
 		System.out.println("Img Type: " + image.getClass());
-		// imp.show();
+		if(testMode)
+			imp.show();
 
 		// Gauss
 		image = (Img<UnsignedByteType>) ops.filter().gauss(image, AnalyzeParamsView.get().getGauss());
+		if(testMode)
+			ImageJFunctions.show(image,"Gauss");
 
 		// Threshold
 		IterableInterval<BitType> maskBitType = ops.threshold().apply(image, new UnsignedByteType(AnalyzeParamsView.get().getThreshold()));
 		Img<BitType> target = image.factory().imgFactory(new BitType()).create(image, new BitType());
 		AnalyzeTasks.copy(target, maskBitType);
-
+		if(testMode)
+			ImageJFunctions.show(target,"threshold");
+		
 		// Watershed
 		ImagePlus water = ImageJFunctions.wrap(target, "target");
 		EDM edm = new EDM();
 		edm.toWatershed(water.getProcessor());
-		// water.show();
+		if(testMode)
+			water.show();
 
 		// Invert
 		final UnsignedByteType c = new UnsignedByteType();
 		Img<UnsignedByteType> inv = ImageJFunctions.wrap(water);
-
+	
 		for (final UnsignedByteType t : inv) {
 
 			c.set(t);
@@ -121,7 +134,8 @@ public class AnalyzeManager {
 
 		}
 		ImagePlus inverted = ImageJFunctions.wrap(inv, "inverted");
-		// ImageJFunctions.show(nn);
+		if(testMode)
+			inverted.show();
 
 		// Particle analyze
 		double minSize = Math.PI * Math.pow((AnalyzeParamsView.get().getMin() / 2), 2.0);
@@ -137,7 +151,8 @@ public class AnalyzeManager {
 		Analyzer.setRedirectImage(imp);
 
 		analyzer.analyze(inverted);
-		System.out.println("Length of result table: " + rt.size());
+		IOFunctions.println("Length of result table: " + rt.size());
+		
 		if (rt.size() == 0) {
 			Log.print(path + ": is Empty !");
 			return null;
@@ -148,7 +163,7 @@ public class AnalyzeManager {
 		double dot_x = rt.getValueAsDouble(rt.getColumnIndex("XM"), i);
 		double dot_y = rt.getValueAsDouble(rt.getColumnIndex("YM"), i);
 
-		System.out.println("dot_area:" + dot_area + " |dot_mean:" + dot_mean + " |dot_x:" + dot_x + " |dot_y:" + dot_y);
+		IOFunctions.println("dot_area:" + dot_area + " |dot_mean:" + dot_mean + " |dot_x:" + dot_x + " |dot_y:" + dot_y);
 		return rt;
 	}
 
