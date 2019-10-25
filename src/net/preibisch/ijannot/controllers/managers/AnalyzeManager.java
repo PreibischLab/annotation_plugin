@@ -33,7 +33,7 @@ public class AnalyzeManager {
 	private static File resultPath;
 
 	public static void start() throws IOException {
-		resultPath = new File(ImgManager.get().getFolder(),CSVFolder);
+		resultPath = new File(ImgManager.get().getFolder(), CSVFolder);
 		IOFunctions.mkdir(resultPath);
 		log = new ArrayList<>();
 		total = new ArrayList<>();
@@ -45,21 +45,22 @@ public class AnalyzeManager {
 
 	public static void test() {
 		String path = ImgManager.get().test();
-		process(path,true);	
+		process(path, true);
 	}
+
 	private static void next() {
 		while (ImgManager.get().hasNext()) {
 			String path = ImgManager.get().next();
 			ResultsTable rt = process(path);
 			if (rt == null) {
-				log.add("Empty: "+path);
+				log.add("Empty: " + path);
 			} else {
-				save(rt, resultName(resultPath,path));
+				save(rt, resultName(resultPath, path));
 			}
 		}
-		File logFile = new File(ImgManager.get().getFolder(),"log.txt");
+		File logFile = new File(ImgManager.get().getFolder(), "log.txt");
 		IOFunctions.generateCSV(log, logFile);
-		File totalFile = new File(ImgManager.get().getFolder(),"total.csv");
+		File totalFile = new File(ImgManager.get().getFolder(), "total.csv");
 		IOFunctions.generateCSV(total, totalFile);
 		Log.print("Done with all files");
 	}
@@ -79,7 +80,7 @@ public class AnalyzeManager {
 			bld.append("\n");
 			list.add(bld.toString());
 		}
-		total.add("\""+file.getAbsolutePath()+"\","+(list.size()-1)+"\n");
+		total.add("\"" + file.getAbsolutePath() + "\"," + (list.size() - 1) + "\n");
 		IOFunctions.generateCSV(list, file);
 	}
 
@@ -90,52 +91,57 @@ public class AnalyzeManager {
 	private static ResultsTable process(String path) {
 		return process(path, false);
 	}
-	private static ResultsTable process(String path,Boolean testMode) {
+
+	private static ResultsTable process(String path, Boolean testMode) {
 		OpService ops = Service.getOps();
 		ImagePlus imp = ImgPlusProc.getChannel(path, AnalyzeParamsView.get().getChannel());
 		Img<UnsignedByteType> image = ImageJFunctions.wrap(imp);
 		final Object type = Util.getTypeFromInterval(image);
 		System.out.println("Pixel Type: " + type.getClass());
 		System.out.println("Img Type: " + image.getClass());
-		if(testMode)
+		if (testMode)
 			imp.show();
 
 		// Gauss
 		image = (Img<UnsignedByteType>) ops.filter().gauss(image, AnalyzeParamsView.get().getGauss());
-		if(testMode)
-			ImageJFunctions.show(image,"Gauss");
+		if (testMode)
+			ImageJFunctions.show(image, "Gauss");
 
 		// Threshold
-		IterableInterval<BitType> maskBitType = ops.threshold().apply(image, new UnsignedByteType(AnalyzeParamsView.get().getThreshold()));
+		IterableInterval<BitType> maskBitType = ops.threshold().apply(image,
+				new UnsignedByteType(AnalyzeParamsView.get().getThreshold()));
 		Img<BitType> target = image.factory().imgFactory(new BitType()).create(image, new BitType());
 		AnalyzeTasks.copy(target, maskBitType);
-		if(testMode)
-			ImageJFunctions.show(target,"threshold");
-		
+		if (testMode)
+			ImageJFunctions.show(target, "threshold");
+
 		// Watershed
 		ImagePlus water = ImageJFunctions.wrap(target, "target");
 		EDM edm = new EDM();
 		edm.toWatershed(water.getProcessor());
-		if(testMode)
+		if (testMode)
 			water.show();
 
 		// Invert
-		final UnsignedByteType c = new UnsignedByteType();
-		Img<UnsignedByteType> inv = ImageJFunctions.wrap(water);
-	
-		for (final UnsignedByteType t : inv) {
+		Boolean invert = AnalyzeParamsView.get().getInverted();
+		if (invert) {
+			final UnsignedByteType c = new UnsignedByteType();
+			Img<UnsignedByteType> inv = ImageJFunctions.wrap(water);
 
-			c.set(t);
-			int x = c.getInteger();
-			if (x == 0)
-				t.setInteger(255);
-			else
-				t.setInteger(0);
+			for (final UnsignedByteType t : inv) {
 
+				c.set(t);
+				int x = c.getInteger();
+				if (x == 0)
+					t.setInteger(255);
+				else
+					t.setInteger(0);
+
+			}
+			water = ImageJFunctions.wrap(inv, "inverted");
+			if (testMode)
+				water.show();
 		}
-		ImagePlus inverted = ImageJFunctions.wrap(inv, "inverted");
-		if(testMode)
-			inverted.show();
 
 		// Particle analyze
 		double minSize = Math.PI * Math.pow((AnalyzeParamsView.get().getMin() / 2), 2.0);
@@ -150,9 +156,9 @@ public class AnalyzeManager {
 		ParticleAnalyzer analyzer = new ParticleAnalyzer(opts, meas, rt, minSize, maxSize);
 		Analyzer.setRedirectImage(imp);
 
-		analyzer.analyze(inverted);
+		analyzer.analyze(water);
 		IOFunctions.println("Length of result table: " + rt.size());
-		
+
 		if (rt.size() == 0) {
 			Log.print(path + ": is Empty !");
 			return null;
@@ -163,7 +169,8 @@ public class AnalyzeManager {
 		double dot_x = rt.getValueAsDouble(rt.getColumnIndex("XM"), i);
 		double dot_y = rt.getValueAsDouble(rt.getColumnIndex("YM"), i);
 
-		IOFunctions.println("dot_area:" + dot_area + " |dot_mean:" + dot_mean + " |dot_x:" + dot_x + " |dot_y:" + dot_y);
+		IOFunctions
+				.println("dot_area:" + dot_area + " |dot_mean:" + dot_mean + " |dot_x:" + dot_x + " |dot_y:" + dot_y);
 		return rt;
 	}
 

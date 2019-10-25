@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -31,6 +32,7 @@ public class AnalyzeParamsView extends JFrame implements ActionListener {
 	private double gauss;
 	private int channel;
 	private int threshold;
+	private Boolean inverted;
 	private JTextField minField;
 	private JTextField maxField;
 	private JTextField gaussField;
@@ -38,6 +40,7 @@ public class AnalyzeParamsView extends JFrame implements ActionListener {
 	private JTextField thresholdField;
 	private JButton nextButton;
 	private JButton testButton;
+	private JCheckBox invertedCheck;
 
 	private AnalyzeParamsView(double min, double max, double gauss, int channel, int threshold) {
 		super(TITLE);
@@ -72,7 +75,7 @@ public class AnalyzeParamsView extends JFrame implements ActionListener {
 		setContentPane(contentPanel);
 		contentPanel.setSize(200, 300);
 
-		contentPanel.setLayout(new GridLayout(6, 2, 10, 10));
+		contentPanel.setLayout(new GridLayout(7, 2, 10, 10));
 
 		channelField = new JTextField(String.valueOf(channel));
 		contentPanel.add(new JLabel("Channels:"));
@@ -94,6 +97,9 @@ public class AnalyzeParamsView extends JFrame implements ActionListener {
 		contentPanel.add(new JLabel("Analyze Max:"));
 		contentPanel.add(maxField);
 
+		invertedCheck = new JCheckBox("Inverted ");
+		contentPanel.add(invertedCheck);
+		contentPanel.add(new JPanel());
 		nextButton = new JButton("Next");
 		testButton = new JButton("Test");
 		// contentPanel.add(new JLabel());
@@ -103,26 +109,6 @@ public class AnalyzeParamsView extends JFrame implements ActionListener {
 		contentPanel.add(nextButton);
 		nextButton.addActionListener(this);
 
-	}
-
-	public double getMin() {
-		return min;
-	}
-
-	public double getMax() {
-		return max;
-	}
-
-	public double getGauss() {
-		return gauss;
-	}
-
-	public int getChannel() {
-		return channel;
-	}
-
-	public int getThreshold() {
-		return threshold;
 	}
 
 	@Override
@@ -138,6 +124,7 @@ public class AnalyzeParamsView extends JFrame implements ActionListener {
 	private Boolean setValues() {
 		Boolean valid = true;
 		try {
+			inverted = invertedCheck.isSelected();
 			channel = Integer.parseInt(channelField.getText());
 			gauss = Double.parseDouble(gaussField.getText());
 			threshold = Integer.parseInt(thresholdField.getText());
@@ -154,7 +141,7 @@ public class AnalyzeParamsView extends JFrame implements ActionListener {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-					AnalyzeManager.test();		
+				AnalyzeManager.test();
 			}
 		}).run();
 	}
@@ -180,4 +167,27 @@ public class AnalyzeParamsView extends JFrame implements ActionListener {
 		AnalyzeParamsView.init();
 	}
 
+	public double getMin() {
+		return min;
+	}
+
+	public double getMax() {
+		return max;
+	}
+
+	public double getGauss() {
+		return gauss;
+	}
+
+	public int getChannel() {
+		return channel;
+	}
+
+	public int getThreshold() {
+		return threshold;
+	}
+
+	public Boolean getInverted() {
+		return inverted;
+	}
 }
