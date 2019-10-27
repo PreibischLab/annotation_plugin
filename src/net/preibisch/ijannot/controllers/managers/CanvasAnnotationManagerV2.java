@@ -16,10 +16,12 @@ public class CanvasAnnotationManagerV2 {
 	private static List<String> allAnnot;
 	private static String path;
 	private static ImagePlus imp;
+	private static File csv;
 
 	private static final String CSV_FILE = "block_annotation.csv";
 
 	public static void start() throws IOException {
+		csv = new File(new File(path).getParent(), CSV_FILE);
 		allAnnot = new ArrayList<>();
 		if (ImgManager.get().hasNext())
 			next();
@@ -46,9 +48,11 @@ public class CanvasAnnotationManagerV2 {
 	}
 
 	public static void exit() {	
-			File csv = new File(new File(path).getParent(), CSV_FILE);
+			
 			IOFunctions.generateCSV(allAnnot, csv);
 			IOFunctions.println("All done ! Generate file");	
+			if (imp != null)
+				imp.close();
 	}
 
 	public static void add(int category) {

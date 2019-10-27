@@ -5,11 +5,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 
@@ -20,21 +22,40 @@ public class AnnotationCategoriesView extends JFrame implements ActionListener {
 	private static AnnotationCategoriesView instance;
 	private static String TITLE = "Annotate View";
 
+	private ArrayList<Integer> TOTALS;
+	private Integer total;
+
 	private List<JButton> fields;
+	private JLabel label;
 
 	private <T> AnnotationCategoriesView(List<T> categories) {
 		super(TITLE);
+		this.label = new JLabel("");
 		fields = new ArrayList<JButton>();
+		TOTALS = new ArrayList<>(Collections.nCopies(categories.size(), 0));
+		total = 0;
+		updateLabel();
 		for (T category : categories) {
 			JButton b = new JButton();
 			b.setBackground(Tools.randomColor());
-			// b.setContentAreaFilled(true);
 			b.setOpaque(true);
-			// b.setForeground(Tools.randomColor());
 			b.setText(String.valueOf(category));
 			b.addActionListener(this);
 			fields.add(b);
 		}
+	}
+
+	public void add(int x) {
+		total = total + 1;
+		TOTALS.set(x, TOTALS.get(x) + 1);
+		updateLabel();
+	}
+
+	private void updateLabel() {
+		String s = "Total: " + total;
+		for (int i = 0; i < TOTALS.size(); i++)
+			s = s + " " + i + ":" + TOTALS.get(i);
+		this.label.setText(s);
 	}
 
 	public static <T> AnnotationCategoriesView get(List<T> categories) {
@@ -55,11 +76,12 @@ public class AnnotationCategoriesView extends JFrame implements ActionListener {
 		JPanel contentPanel2 = new JPanel();
 		setSize(340, 200);
 		Border padding = BorderFactory.createEmptyBorder(10, 10, 10, 10);
-
+		label.setBorder(padding);
 		contentPanel1.setBorder(padding);
 		contentPanel2.setBorder(padding);
-		this.setLayout(new GridLayout(2, 1));
+		this.setLayout(new GridLayout(3, 1));
 		this.add(contentPanel1);
+		this.add(label);
 		this.add(contentPanel2);
 
 		contentPanel1.setLayout(new GridLayout(1, fields.size(), 10, 10));
@@ -80,6 +102,7 @@ public class AnnotationCategoriesView extends JFrame implements ActionListener {
 		String s = ((JButton) e.getSource()).getText();
 		if (Character.isDigit(s.charAt(0))) {
 			Integer x = Integer.parseInt(s);
+			add(x);
 			CanvasAnnotationManagerV2.add(x);
 			CanvasAnnotationManagerV2.next();
 			return;
@@ -87,6 +110,7 @@ public class AnnotationCategoriesView extends JFrame implements ActionListener {
 		switch (s) {
 		case "Exit":
 			CanvasAnnotationManagerV2.exit();
+			this.setVisible(false);
 			break;
 		case "Undo":
 			CanvasAnnotationManagerV2.undo();
