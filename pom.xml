@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>net.preibisch</groupId>
 	<artifactId>ijannot</artifactId>
-	<version>0.0.2</version>
+	<version>0.0.3</version>
 	<name>Annotation Plugin</name>
 	<description>Annotation Plugin </description>
 	<url>https://github.com/PreibischLab/annotation_plugin</url>
