@@ -50,7 +50,7 @@ public class TrainDataGenerator {
 //			return;
 		}
 		 File logFile = new File(folder,"log.txt");
-		 IOFunctions.generateCSV(log, logFile);
+		 IOFunctions.generateCSV(log, logFile,true);
 		// File totalFile = new File(ImgManager.get().getFolder(),"total.csv");
 		// IOFunctions.generateCSV(total, totalFile);
 		 Log.print("Done with all files");

@@ -44,7 +44,7 @@ public class CanvasAnnotationManager {
 			imp.getCanvas().addKeyListener(new KeyboardClickV1());
 		} else {
 			File csv = new File(new File(path).getParent(), CSV_FILE);
-			IOFunctions.generateCSV(allAnnot, csv);
+			IOFunctions.generateCSV(allAnnot, csv,false);
 			IOFunctions.println("All done ! Generate file");
 		}
 	}

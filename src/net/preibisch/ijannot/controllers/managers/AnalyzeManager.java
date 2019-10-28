@@ -59,9 +59,9 @@ public class AnalyzeManager {
 			}
 		}
 		File logFile = new File(ImgManager.get().getFolder(), "log.txt");
-		IOFunctions.generateCSV(log, logFile);
+		IOFunctions.generateCSV(log, logFile,true);
 		File totalFile = new File(ImgManager.get().getFolder(), "total.csv");
-		IOFunctions.generateCSV(total, totalFile);
+		IOFunctions.generateCSV(total, totalFile,true);
 		Log.print("Done with all files");
 	}
 
@@ -81,7 +81,7 @@ public class AnalyzeManager {
 			list.add(bld.toString());
 		}
 		total.add("\"" + file.getAbsolutePath() + "\"," + (list.size() - 1) + "\n");
-		IOFunctions.generateCSV(list, file);
+		IOFunctions.generateCSV(list, file,true);
 	}
 
 	private static File resultName(File folder, String input) {

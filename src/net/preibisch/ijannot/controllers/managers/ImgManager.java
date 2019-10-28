@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import com.google.common.io.Files;
 
@@ -83,6 +84,20 @@ public class ImgManager {
 		this.toProcess.add(0, this.current);
 		this.toProcess.add(0, this.processed.get(this.processed.size()-1));
 		this.current = null;
+	}
+
+	public  void ignore(Set<String> set) {
+		
+		for(String s : set) {
+			String p = new File(folder,s).getAbsolutePath();
+			int x = toProcess.indexOf(p);
+			System.out.println(x+"-"+p);
+			if(x>=0) {
+				String t = this.toProcess.remove(x);
+				this.processed.add(t);
+				System.out.println("To ignore: "+t);
+			}	
+		}
 	}
 
 }
