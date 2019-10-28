@@ -22,7 +22,7 @@ public class AnnotationCategoriesView extends JFrame implements ActionListener {
 	private static AnnotationCategoriesView instance;
 	private static String TITLE = "Annotate View";
 
-	private ArrayList<Integer> TOTALS;
+	private List<Integer> TOTALS;
 	private Integer total;
 
 	private List<JButton> fields;
@@ -43,6 +43,17 @@ public class AnnotationCategoriesView extends JFrame implements ActionListener {
 			b.addActionListener(this);
 			fields.add(b);
 		}
+	}
+	
+	public static void updateTotals(List<Integer> totals2, Integer total) {
+		instance.setTotals(totals2, total);
+	}
+	
+	
+	public void setTotals(List<Integer> totals, Integer total) {
+		this.TOTALS = totals;
+		this.total = total;
+		updateLabel();
 	}
 
 	public void add(int x) {

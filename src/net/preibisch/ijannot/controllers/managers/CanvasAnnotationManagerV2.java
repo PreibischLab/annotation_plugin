@@ -4,6 +4,8 @@ import java.awt.Rectangle;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +15,7 @@ import ij.ImagePlus;
 import ij.io.Opener;
 import net.preibisch.ijannot.controllers.listners.KeyboardClickV2;
 import net.preibisch.ijannot.util.IOFunctions;
+import net.preibisch.ijannot.view.AnnotationCategoriesView;
 
 public class CanvasAnnotationManagerV2 {
 	// private static Integer currentAnnot;
@@ -29,6 +32,7 @@ public class CanvasAnnotationManagerV2 {
 		if (csv.exists()) {
 			list = IOFunctions.getCSV(csv);
 			ImgManager.get().ignore(list.keySet());
+			getupdateTotals(list.values());
 		} else
 			list = new HashMap<>();
 		allAnnot = new ArrayList<>();
@@ -37,6 +41,24 @@ public class CanvasAnnotationManagerV2 {
 		else
 			throw new IOException("Empty folder !");
 	}
+
+
+
+	private static void getupdateTotals(Collection<Integer> values) {
+		
+		try{
+			List<Integer> totals =  new ArrayList<Integer>(Collections.nCopies(5, 0));
+		
+		Integer total = values.size();
+		for(Integer value : values)
+			totals.set(value, totals.get(value)+1);
+		AnnotationCategoriesView.updateTotals(totals, total);
+		}catch(Exception e) {
+			IOFunctions.println(e.toString());
+		}
+	}
+
+
 
 	public static void next() {
 		try {

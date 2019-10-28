@@ -32,14 +32,13 @@ public class IOFunctions {
 	public static <T> void generateCSV(List<T> list, File file, Boolean resave) {
 		println("creating CSV: " + file.getAbsolutePath());
 		if (resave)
-			if (file.exists()) {
+			if (file.exists())
 				try {
 					Files.delete(file.toPath());
 				} catch (IOException e) {
 					Log.error(e.toString());
 					return;
 				}
-			}
 
 		try (FileWriter csvWriter = new FileWriter(file, true)) {
 
