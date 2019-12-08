@@ -28,10 +28,10 @@ public class TrainDataGenerator {
 	private static List<String> log;
 	private static List<String> total;
 	private static File folder;
-	private static final int blockSize = 40;
+	private static final int blockSize = 25;
 
 	public static void start() throws IOException {
-		folder = new File(new File(ImgManager.get().getFolder()).getParent(), "blocks");
+		folder = new File(new File(ImgManager.get().getFolder()).getParent(), "blocks_25");
 		IOFunctions.mkdir(folder);
 
 		log = new ArrayList<>();

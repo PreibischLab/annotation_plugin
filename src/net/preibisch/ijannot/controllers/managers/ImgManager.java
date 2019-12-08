@@ -3,6 +3,7 @@ package net.preibisch.ijannot.controllers.managers;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -51,6 +52,8 @@ public class ImgManager {
 				this.toProcess.add(tmp.getAbsolutePath());
 			}
 		}
+
+		Collections.shuffle(this.toProcess);
 		if (this.toProcess.isEmpty())
 			throw new IOException("Empty folder ! \n No file found with extension: " + this.ext);
 		IOFunctions.println("Found " + this.toProcess.size() + " File found with extension: " + this.ext);
