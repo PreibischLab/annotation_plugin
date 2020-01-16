@@ -1,5 +1,6 @@
 package net.preibisch.ijannot.util;
 
+import java.awt.Point;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -39,14 +40,11 @@ public class IOFunctions {
 					Log.error(e.toString());
 					return;
 				}
-
 		try (FileWriter csvWriter = new FileWriter(file, true)) {
-
 			for (Object a : list) {
 				String s = a.toString();
 				csvWriter.append(s);
 			}
-
 			csvWriter.flush();
 			csvWriter.close();
 		} catch (IOException e) {
@@ -78,9 +76,37 @@ public class IOFunctions {
 		csvReader.close();
 		return result;
 	}
+	
+	public static Map<String, Point> getCSVDots(File f) throws IOException {
+		Map<String, Point> result = new HashMap<>();
+
+		BufferedReader csvReader = new BufferedReader(new FileReader(f));
+		String row;
+		while ((row = csvReader.readLine()) != null) {
+			String[] data = row.split(",");
+			String key = data[0].substring(1, data[0].length() - 1);
+			// System.out.println(key);
+			result.put(key, fromString(data[1]));
+		}
+		csvReader.close();
+		return result;
+	}
 
 	public static void main(String[] args) throws IOException {
 		getCSV(new File("/Users/Marwan/Desktop/block_annotation.csv"));
+	}
+	
+	public static String pointToString(Point p) {
+		return p.x+"-"+p.y;
+	}
+	
+	public static Point fromString(String str) {
+		String[] s = str.split("-");
+		return new Point(Integer.parseInt(s[0]), Integer.parseInt(s[1]));
+	}
+	
+	public static String toAnnotString(String s,Point p) {
+		return "\"" + s + "\"" + "," + pointToString(p) + "\n";
 	}
 
 }

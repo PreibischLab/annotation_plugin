@@ -1,5 +1,6 @@
 package net.preibisch.ijannot.controllers.managers;
 
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.io.File;
 import java.io.IOException;
@@ -14,6 +15,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.io.Opener;
 import net.preibisch.ijannot.controllers.listners.KeyboardClickV2;
+import net.preibisch.ijannot.util.Default;
 import net.preibisch.ijannot.util.IOFunctions;
 import net.preibisch.ijannot.view.AnnotationCategoriesView;
 
@@ -23,12 +25,18 @@ public class CanvasAnnotationManagerV2 {
 	private static String path;
 	private static ImagePlus imp;
 	private static File csv;
+	private static Map<String, Point> positions;
 
-	private static final String CSV_FILE = "block_annotation.csv";
-
+	
 	public static void start() throws IOException {
-		csv = new File(ImgManager.get().getFolder(), CSV_FILE);
+		csv = new File(ImgManager.get().getFolder(), Default.ANNOTARION_CSV_FILE);
 		Map<String, Integer> list;
+		
+		File positionFile = new File(ImgManager.get().getFolder(), Default.ANNOTARION_CSV_FILE);
+		if(positionFile.exists()) {
+			positions = IOFunctions.getCSVDots(positionFile);
+		}
+		
 		if (csv.exists()) {
 			list = IOFunctions.getCSV(csv);
 			ImgManager.get().ignore(list.keySet());
@@ -41,8 +49,6 @@ public class CanvasAnnotationManagerV2 {
 		else
 			throw new IOException("Empty folder !");
 	}
-
-
 
 	private static void getupdateTotals(Collection<Integer> values) {
 		
@@ -58,8 +64,6 @@ public class CanvasAnnotationManagerV2 {
 		}
 	}
 
-
-
 	public static void next() {
 		try {
 			if (imp != null)
@@ -68,13 +72,14 @@ public class CanvasAnnotationManagerV2 {
 				path = ImgManager.get().next();
 
 				IOFunctions.println("Current: " + path);
+				Point dot = positions.get(new File(path).getName());
+				if(dot==null)
+					dot = new Point(Default.blockSize, Default.blockSize);
 				imp = new Opener().openImage(path);
 				imp.show();
-				imp.setRoi(new Rectangle(39,39,2,2));
+				imp.setRoi(new Rectangle(dot.x,dot.y,4,4));
 				for (int i = 0; i < 4; i++)
 					IJ.run("In [+]", "");
-
-				// imp.getCanvas().addMouseListener(new MouseClick());
 				imp.getCanvas().addKeyListener(new KeyboardClickV2());
 			} else {
 				exit();
