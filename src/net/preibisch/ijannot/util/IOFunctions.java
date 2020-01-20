@@ -83,10 +83,13 @@ public class IOFunctions {
 		BufferedReader csvReader = new BufferedReader(new FileReader(f));
 		String row;
 		while ((row = csvReader.readLine()) != null) {
+			try {
 			String[] data = row.split(",");
 			String key = data[0].substring(1, data[0].length() - 1);
-			// System.out.println(key);
 			result.put(key, fromString(data[1]));
+			}catch (Exception e) {
+				IOFunctions.println("Error parse:" + row);
+			}
 		}
 		csvReader.close();
 		return result;
